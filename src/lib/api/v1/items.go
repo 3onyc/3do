@@ -2,6 +2,8 @@
 package api1
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"lib"
 	"lib/model"
@@ -11,11 +13,11 @@ import (
 )
 
 type ItemListResponse struct {
-	TodoItems []model.TodoItem `json:"todoItems"`
+	TodoItems []*model.TodoItem `json:"todoItems"`
 }
 
 type ItemGetResponse struct {
-	TodoItem model.TodoItem `json:"todoItem"`
+	TodoItem *model.TodoItem `json:"todoItem"`
 }
 
 func itemsList(w http.ResponseWriter, r *http.Request) {
@@ -40,57 +42,71 @@ func itemGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Item not found", 404)
 	} else {
 		util.WriteJSONResponse(w, &ItemGetResponse{
-			TodoItem: *item,
+			TodoItem: item,
 		})
 	}
 }
 
 func itemPut(w http.ResponseWriter, r *http.Request) {
-	// var idx int
-	// id := mux.Vars(r)["id"]
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
-	// for i, v := range ItemsFixture {
-	// 	if strconv.FormatUint(uint64(v.ID), 10) == id {
-	// 		idx = i
-	// 		break
-	// 	}
-	// }
+	item, err := model.FindTodoItem(lib.GetDB(), id)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
-	// if idx == 0 {
-	// 	http.Error(w, "List Not Found", 404)
-	// 	return
-	// }
+	if item == nil {
+		http.Error(w, "Item not found", 404)
+		return
+	}
 
-	// var payload = &ItemGetResponse{}
-	// if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
-	// 	http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
-	// 	return
-	// }
+	var payload = &ItemGetResponse{}
+	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
+		return
+	}
 
-	// ItemsFixture[idx] = payload.TodoItem
+	item.Title = payload.TodoItem.Title
+	item.Description = payload.TodoItem.Description
+	item.Done = payload.TodoItem.Done
+	item.DoneAt = payload.TodoItem.DoneAt
+	item.Group = payload.TodoItem.Group
+
+	if err := model.UpdateTodoItem(lib.GetDB(), item); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func itemPost(w http.ResponseWriter, r *http.Request) {
-	// var maxID uint
-	// for _, v := range ItemsFixture {
-	// 	if v.ID > maxID {
-	// 		maxID = v.ID
-	// 	}
-	// }
+	var payload = &ItemGetResponse{}
+	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
+		return
+	}
 
-	// var payload = &ItemGetResponse{}
-	// if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
-	// 	http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
-	// 	return
-	// }
-
-	// payload.TodoItem.ID = maxID + 1
-	// ItemsFixture = append(ItemsFixture, payload.TodoItem)
+	postItem := payload.TodoItem
+	_, err := model.InsertTodoItem(lib.GetDB(), &model.TodoItem{
+		Title:       postItem.Title,
+		Description: postItem.Description,
+		Done:        postItem.Done,
+		DoneAt:      postItem.DoneAt,
+		Group:       postItem.Group,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func init() {
 	lib.Routes.HandleFunc("/api/v1/todoItems", itemsList).Methods("GET")
 	lib.Routes.HandleFunc("/api/v1/todoItems/{id}", itemGet).Methods("GET")
-	// lib.Routes.HandleFunc("/api/v1/todoItems/{id}", itemPut).Methods("PUT")
-	// lib.Routes.HandleFunc("/api/v1/todoItems", itemPost).Methods("POST")
+	lib.Routes.HandleFunc("/api/v1/todoItems/{id}", itemPut).Methods("PUT")
+	lib.Routes.HandleFunc("/api/v1/todoItems", itemPost).Methods("POST")
 }

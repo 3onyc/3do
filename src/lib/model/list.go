@@ -10,12 +10,16 @@ type TodoList struct {
 	ID          util.NullInt64 `json:"id,string"`
 	Title       string         `json:"title"`
 	Description string         `json:"description"`
-	CreatedAt   time.Time      `json:"createdAt" db:"created_at"`
-	UpdatedAt   time.Time      `json:"updatedAt" db:"updated_at"`
+	CreatedAt   *time.Time     `json:"createdAt" db:"created_at"`
+	UpdatedAt   *time.Time     `json:"updatedAt" db:"updated_at"`
 	Groups      []int64        `json:"groups,string"`
 }
 
-func InsertTodoList(db *sqlx.DB, list TodoList) (int64, error) {
+func InsertTodoList(db *sqlx.DB, list *TodoList) (int64, error) {
+	now := time.Now()
+	list.CreatedAt = &now
+	list.UpdatedAt = &now
+
 	r, err := db.NamedExec(TODO_LIST_INSERT_QUERY, list)
 	if err != nil {
 		return 0, err
@@ -29,18 +33,29 @@ func InsertTodoList(db *sqlx.DB, list TodoList) (int64, error) {
 	return int64(lastID), nil
 }
 
+func UpdateTodoList(db *sqlx.DB, list *TodoList) error {
+	now := time.Now()
+	list.UpdatedAt = &now
+
+	if _, err := db.NamedExec(TODO_LIST_UPDATE_QUERY, list); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func SetListGroupIDs(db *sqlx.DB, l *TodoList) error {
 	return db.Select(&l.Groups, TODO_GROUP_SELECT_IDS_WITH_LIST_QUERY, l.ID)
 }
 
-func GetAllTodoLists(db *sqlx.DB) ([]TodoList, error) {
-	var lists = []TodoList{}
+func GetAllTodoLists(db *sqlx.DB) ([]*TodoList, error) {
+	var lists = []*TodoList{}
 	if err := db.Select(&lists, TODO_LIST_SELECT_QUERY); err != nil {
 		return nil, err
 	}
 
 	for _, list := range lists {
-		if err := SetListGroupIDs(db, &list); err != nil {
+		if err := SetListGroupIDs(db, list); err != nil {
 			return nil, err
 		}
 	}

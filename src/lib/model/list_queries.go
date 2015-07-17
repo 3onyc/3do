@@ -18,6 +18,17 @@ var (
 			:updated_at
 		)
 	`
+	TODO_LIST_UPDATE_QUERY = `
+		UPDATE
+			"todo_lists"
+		SET
+			"title" = :title,
+			"description" = :description,
+			"created_at" = :created_at,
+			"updated_at" = :updated_at
+		WHERE
+			"id" = :id
+	`
 	TODO_LIST_SELECT_QUERY = `
 		SELECT
 			"id",

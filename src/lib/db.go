@@ -3,7 +3,6 @@ package lib
 import (
 	"github.com/jmoiron/sqlx"
 	"lib/model"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -69,40 +68,28 @@ func CreateDBSchema(db *sqlx.DB) {
 }
 
 func SeedDB(db *sqlx.DB) error {
-	l1 := model.TodoList{
+	l1 := &model.TodoList{
 		Title:       "Hello",
 		Description: "Foo",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 	}
-	l2 := model.TodoList{
+	l2 := &model.TodoList{
 		Title:       "Bye",
 		Description: "Bar",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 	}
 
-	i1 := model.TodoItem{
+	i1 := &model.TodoItem{
 		Title:       "Item 1",
 		Description: "# Foo",
 		Done:        false,
-		DoneAt:      time.Now(),
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 	}
-	i2 := model.TodoItem{
+	i2 := &model.TodoItem{
 		Title:       "Item 2",
 		Description: "Bar",
 		Done:        false,
-		DoneAt:      time.Now(),
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 	}
 
-	g1 := model.TodoGroup{
-		Title:     "Group 1",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	g1 := &model.TodoGroup{
+		Title: "Group 1",
 	}
 
 	l1id, err := model.InsertTodoList(db, l1)

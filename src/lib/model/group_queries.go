@@ -18,6 +18,17 @@ var (
 			:list_id
 		)
 	`
+	TODO_GROUP_UPDATE_QUERY = `
+		UPDATE
+			"todo_groups"
+		SET
+			"title" = :title,
+			"created_at" = :created_at,
+			"updated_at" = :updated_at,
+			"list_id" = :list_id
+		WHERE
+			"id" = :id
+	`
 	TODO_GROUP_SELECT_QUERY = `
 		SELECT
 			"id",

@@ -24,6 +24,20 @@ var (
 			:group_id
 		)
 	`
+	TODO_ITEM_UPDATE_QUERY = `
+		UPDATE
+			"todo_items"
+		SET
+			"title" = :title,
+			"description" = :description,
+			"done" = :done,
+			"done_at" = :done_at,
+			"created_at" = :created_at,
+			"updated_at" = :updated_at,
+			"group_id" = :group_id
+		WHERE
+			"id" = :id
+	`
 	TODO_ITEM_SELECT_QUERY = `
 		SELECT
 			"id",

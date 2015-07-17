@@ -11,13 +11,17 @@ type TodoItem struct {
 	Title       string         `json:"title"`
 	Description string         `json:"description"`
 	Done        bool           `json:"done"`
-	DoneAt      time.Time      `json:"doneAt" db:"done_at"`
-	CreatedAt   time.Time      `json:"createdAt" db:"created_at"`
-	UpdatedAt   time.Time      `json:"updatedAt" db:"updated_at"`
+	DoneAt      *time.Time     `json:"doneAt" db:"done_at"`
+	CreatedAt   *time.Time     `json:"createdAt" db:"created_at"`
+	UpdatedAt   *time.Time     `json:"updatedAt" db:"updated_at"`
 	Group       int64          `json:"group,string" db:"group_id"`
 }
 
-func InsertTodoItem(db *sqlx.DB, item TodoItem) (int64, error) {
+func InsertTodoItem(db *sqlx.DB, item *TodoItem) (int64, error) {
+	now := time.Now()
+	item.CreatedAt = &now
+	item.UpdatedAt = &now
+
 	r, err := db.NamedExec(TODO_ITEM_INSERT_QUERY, item)
 	if err != nil {
 		return 0, err
@@ -31,8 +35,19 @@ func InsertTodoItem(db *sqlx.DB, item TodoItem) (int64, error) {
 	return int64(lastID), nil
 }
 
-func GetAllTodoItems(db *sqlx.DB) ([]TodoItem, error) {
-	var items = []TodoItem{}
+func UpdateTodoItem(db *sqlx.DB, item *TodoItem) error {
+	now := time.Now()
+	item.UpdatedAt = &now
+
+	if _, err := db.NamedExec(TODO_ITEM_UPDATE_QUERY, item); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllTodoItems(db *sqlx.DB) ([]*TodoItem, error) {
+	var items = []*TodoItem{}
 	if err := db.Select(&items, TODO_ITEM_SELECT_QUERY); err != nil {
 		return nil, err
 	}
@@ -40,8 +55,8 @@ func GetAllTodoItems(db *sqlx.DB) ([]TodoItem, error) {
 	return items, nil
 }
 
-func GetAllTodoItemsForGroup(db *sqlx.DB, groupID int64) ([]TodoItem, error) {
-	var items = []TodoItem{}
+func GetAllTodoItemsForGroup(db *sqlx.DB, groupID int64) ([]*TodoItem, error) {
+	var items = []*TodoItem{}
 	if err := db.Select(&items, TODO_ITEM_SELECT_WITH_GROUP_QUERY, groupID); err != nil {
 		return nil, err
 	}
