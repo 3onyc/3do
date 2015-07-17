@@ -92,26 +92,23 @@ func SeedDB(db *sqlx.DB) error {
 		Title: "Group 1",
 	}
 
-	l1id, err := model.InsertTodoList(db, l1)
-	if err != nil {
+	if err := model.InsertTodoList(db, l1); err != nil {
 		return err
 	}
-	if _, err := model.InsertTodoList(db, l2); err != nil {
-		return err
-	}
-
-	g1.List = l1id
-	g1id, err := model.InsertTodoGroup(db, g1)
-	if err != nil {
+	if err := model.InsertTodoList(db, l2); err != nil {
 		return err
 	}
 
-	i1.Group = g1id
-	i2.Group = g1id
-	if _, err := model.InsertTodoItem(db, i1); err != nil {
+	if err := model.InsertTodoGroup(db, g1); err != nil {
 		return err
 	}
-	if _, err := model.InsertTodoItem(db, i2); err != nil {
+
+	i1.Group = g1.ID.Int64
+	i2.Group = g1.ID.Int64
+	if err := model.InsertTodoItem(db, i1); err != nil {
+		return err
+	}
+	if err := model.InsertTodoItem(db, i2); err != nil {
 		return err
 	}
 

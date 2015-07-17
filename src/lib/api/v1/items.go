@@ -91,14 +91,15 @@ func itemPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postItem := payload.TodoItem
-	_, err := model.InsertTodoItem(lib.GetDB(), &model.TodoItem{
+	item := &model.TodoItem{
 		Title:       postItem.Title,
 		Description: postItem.Description,
 		Done:        postItem.Done,
 		DoneAt:      postItem.DoneAt,
 		Group:       postItem.Group,
-	})
-	if err != nil {
+	}
+
+	if err := model.InsertTodoItem(lib.GetDB(), item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}

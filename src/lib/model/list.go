@@ -15,22 +15,23 @@ type TodoList struct {
 	Groups      []int64        `json:"groups,string"`
 }
 
-func InsertTodoList(db *sqlx.DB, list *TodoList) (int64, error) {
+func InsertTodoList(db *sqlx.DB, list *TodoList) error {
 	now := time.Now()
 	list.CreatedAt = &now
 	list.UpdatedAt = &now
 
 	r, err := db.NamedExec(TODO_LIST_INSERT_QUERY, list)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	lastID, err := r.LastInsertId()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return int64(lastID), nil
+	list.ID = util.NewNullInt64(lastID)
+	return nil
 }
 
 func UpdateTodoList(db *sqlx.DB, list *TodoList) error {

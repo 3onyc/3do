@@ -87,11 +87,12 @@ func listPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postList := payload.TodoList
-	_, err := model.InsertTodoList(lib.GetDB(), &model.TodoList{
+	list := &model.TodoList{
 		Title:       postList.Title,
 		Description: postList.Description,
-	})
-	if err != nil {
+	}
+
+	if err := model.InsertTodoList(lib.GetDB(), list); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}

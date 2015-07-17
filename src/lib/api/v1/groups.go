@@ -87,12 +87,13 @@ func groupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postItem := payload.TodoGroup
-	_, err := model.InsertTodoGroup(lib.GetDB(), &model.TodoGroup{
-		Title: postItem.Title,
-		List:  postItem.List,
-	})
-	if err != nil {
+	postGroup := payload.TodoGroup
+	group := &model.TodoGroup{
+		Title: postGroup.Title,
+		List:  postGroup.List,
+	}
+
+	if err := model.InsertTodoGroup(lib.GetDB(), group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}

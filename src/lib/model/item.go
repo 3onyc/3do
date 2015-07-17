@@ -17,22 +17,23 @@ type TodoItem struct {
 	Group       int64          `json:"group,string" db:"group_id"`
 }
 
-func InsertTodoItem(db *sqlx.DB, item *TodoItem) (int64, error) {
+func InsertTodoItem(db *sqlx.DB, item *TodoItem) error {
 	now := time.Now()
 	item.CreatedAt = &now
 	item.UpdatedAt = &now
 
 	r, err := db.NamedExec(TODO_ITEM_INSERT_QUERY, item)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	lastID, err := r.LastInsertId()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return int64(lastID), nil
+	item.ID = util.NewNullInt64(lastID)
+	return nil
 }
 
 func UpdateTodoItem(db *sqlx.DB, item *TodoItem) error {

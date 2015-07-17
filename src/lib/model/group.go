@@ -15,22 +15,23 @@ type TodoGroup struct {
 	Items     []int64        `json:"items,string"`
 }
 
-func InsertTodoGroup(db *sqlx.DB, group *TodoGroup) (int64, error) {
+func InsertTodoGroup(db *sqlx.DB, group *TodoGroup) error {
 	now := time.Now()
 	group.CreatedAt = &now
 	group.UpdatedAt = &now
 
 	r, err := db.NamedExec(TODO_GROUP_INSERT_QUERY, group)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	lastID, err := r.LastInsertId()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return int64(lastID), nil
+	group.ID = util.NewNullInt64(lastID)
+	return nil
 }
 
 func UpdateTodoGroup(db *sqlx.DB, group *TodoGroup) error {
