@@ -77,6 +77,10 @@ func listPut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &ListGetResponse{
+		TodoList: list,
+	})
 }
 
 func listPost(w http.ResponseWriter, r *http.Request) {
@@ -96,6 +100,10 @@ func listPost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &ListGetResponse{
+		TodoList: list,
+	})
 }
 
 func init() {

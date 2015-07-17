@@ -78,6 +78,10 @@ func groupPut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &GroupGetResponse{
+		TodoGroup: group,
+	})
 }
 
 func groupPost(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +101,10 @@ func groupPost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &GroupGetResponse{
+		TodoGroup: group,
+	})
 }
 
 func init() {

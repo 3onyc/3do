@@ -81,6 +81,10 @@ func itemPut(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &ItemGetResponse{
+		TodoItem: item,
+	})
 }
 
 func itemPost(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +107,10 @@ func itemPost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	util.WriteJSONResponse(w, &ItemGetResponse{
+		TodoItem: item,
+	})
 }
 
 func init() {
