@@ -77,6 +77,10 @@ func SeedDB(db *sqlx.DB) error {
 		Description: "Bar",
 	}
 
+	g1 := &model.TodoGroup{
+		Title: "Group 1",
+	}
+
 	i1 := &model.TodoItem{
 		Title:       "Item 1",
 		Description: "# Foo",
@@ -88,10 +92,6 @@ func SeedDB(db *sqlx.DB) error {
 		Done:        false,
 	}
 
-	g1 := &model.TodoGroup{
-		Title: "Group 1",
-	}
-
 	if err := model.InsertTodoList(db, l1); err != nil {
 		return err
 	}
@@ -99,6 +99,7 @@ func SeedDB(db *sqlx.DB) error {
 		return err
 	}
 
+	g1.List = l1.ID.Int64
 	if err := model.InsertTodoGroup(db, g1); err != nil {
 		return err
 	}
