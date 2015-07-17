@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/jmoiron/sqlx"
 	"lib/model"
 	"time"
 
@@ -9,81 +9,124 @@ import (
 )
 
 var (
-	DB *gorm.DB
+	DB *sqlx.DB
 )
 
-func GetDB() (*gorm.DB, error) {
-	if DB != nil {
-		return DB, nil
+func GetDB() *sqlx.DB {
+	if DB == nil {
+		DB = sqlx.MustConnect("sqlite3", "/tmp/3do.sqlite3")
+		return DB
 	}
 
-	db, err := gorm.Open("sqlite3", "/tmp/3do.sqlite3")
-	if err != nil {
-		return nil, err
-	}
-
-	db.AutoMigrate(
-		&model.TodoItem{},
-		&model.TodoGroup{},
-		&model.TodoList{},
-	)
-
-	DB = &db
-	return &db, nil
+	return DB
 }
 
-func SeedDB(db *gorm.DB) error {
-	i1 := model.TodoItem{
-		ID:          1,
-		Title:       "Item 1",
-		Description: "# Foo",
-		Done:        false,
-		DoneAt:      time.Now(),
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		GroupID:     1,
-	}
-	i2 := model.TodoItem{
-		ID:          2,
-		Title:       "Item 2",
-		Description: "Bar",
-		Done:        false,
-		DoneAt:      time.Now(),
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		GroupID:     1,
-	}
+func CreateDBSchema(db *sqlx.DB) {
+	db.MustExec(`
+		CREATE TABLE IF NOT EXISTS "todo_items" (
+			"id" integer,
+			"title" varchar(255),
+			"description" varchar(255),
+			"done" bool,
+			"done_at" datetime,
+			"created_at" datetime,
+			"updated_at" datetime,
+			"group_id" integer ,
 
-	g1 := model.TodoGroup{
-		ID:        1,
-		Title:     "Group 1",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Items:     []model.TodoItem{i1, i2},
-		ListID:    1,
-	}
+			 PRIMARY KEY ("id")
+		 );
+	`)
+	db.MustExec(`
+		CREATE INDEX IF NOT EXISTS idx_todo_items_group_id ON "todo_items"("group_id");
+	`)
 
+	db.MustExec(`
+		CREATE TABLE IF NOT EXISTS "todo_groups" (
+			"id" integer,
+			"title" varchar(255),
+			"created_at" datetime,
+			"updated_at" datetime,
+			"list_id" integer ,
+
+			 PRIMARY KEY ("id")
+		 );
+	`)
+	db.MustExec(`
+		CREATE INDEX IF NOT EXISTS idx_todo_groups_list_id ON "todo_groups"("list_id");
+	`)
+
+	db.MustExec(`
+		CREATE TABLE IF NOT EXISTS "todo_lists" (
+			"id" integer,
+			"title" varchar(255),
+			"description" varchar(255),
+			"created_at" datetime,
+			"updated_at" datetime ,
+
+			 PRIMARY KEY ("id")
+		 );
+	`)
+}
+
+func SeedDB(db *sqlx.DB) error {
 	l1 := model.TodoList{
-		ID:          1,
 		Title:       "Hello",
 		Description: "Foo",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		Groups:      []model.TodoGroup{g1},
 	}
 	l2 := model.TodoList{
-		ID:          2,
 		Title:       "Bye",
 		Description: "Bar",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
 
-	db.Create(&l1)
-	db.Create(&l2)
-	db.Create(&g1)
-	db.Create(&i1)
-	db.Create(&i2)
+	i1 := model.TodoItem{
+		Title:       "Item 1",
+		Description: "# Foo",
+		Done:        false,
+		DoneAt:      time.Now(),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+	i2 := model.TodoItem{
+		Title:       "Item 2",
+		Description: "Bar",
+		Done:        false,
+		DoneAt:      time.Now(),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	g1 := model.TodoGroup{
+		Title:     "Group 1",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	l1id, err := model.InsertTodoList(db, l1)
+	if err != nil {
+		return err
+	}
+	if _, err := model.InsertTodoList(db, l2); err != nil {
+		return err
+	}
+
+	g1.List = l1id
+	g1id, err := model.InsertTodoGroup(db, g1)
+	if err != nil {
+		return err
+	}
+
+	i1.Group = g1id
+	i2.Group = g1id
+	if _, err := model.InsertTodoItem(db, i1); err != nil {
+		return err
+	}
+	if _, err := model.InsertTodoItem(db, i2); err != nil {
+		return err
+	}
 
 	return nil
 }

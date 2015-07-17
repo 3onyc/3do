@@ -26,14 +26,8 @@ var (
 
 func initDB() {
 	log.Println("Initialising database...")
-	db, err := lib.GetDB()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if *DEBUG {
-		db.LogMode(true)
-	}
+	db := lib.GetDB()
+	lib.CreateDBSchema(db)
 
 	if *DB_SEED {
 		log.Println("Seeding database...")
