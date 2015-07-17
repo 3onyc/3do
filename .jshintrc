@@ -1,5 +1,6 @@
 {
   "predef": [
+    "Remarkable",
     "document",
     "window",
     "-Promise"

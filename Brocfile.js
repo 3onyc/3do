@@ -16,5 +16,12 @@ var app = new EmberApp();
 // modules that you would like to import into your application
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
+app.import(app.bowerDirectory + '/remarkable/dist/remarkable.js', {
+    exports: {
+        'remarkable': [
+            'Remarkable'
+        ]
+    }
+});
 
 module.exports = app.toTree();
