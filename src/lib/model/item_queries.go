@@ -38,6 +38,12 @@ var (
 		WHERE
 			"id" = :id
 	`
+	TODO_ITEM_DELETE_QUERY = `
+		DELETE FROM
+			"todo_items"
+		WHERE
+			"id" = :id
+	`
 	TODO_ITEM_SELECT_QUERY = `
 		SELECT
 			"id",

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"lib/util"
 	"time"
@@ -16,6 +17,10 @@ type TodoItem struct {
 	UpdatedAt   *time.Time     `json:"updatedAt" db:"updated_at"`
 	Group       int64          `json:"group,string" db:"group_id"`
 }
+
+var (
+	ItemNotFound = errors.New("Item Not Found")
+)
 
 func InsertTodoItem(db *sqlx.DB, item *TodoItem) error {
 	now := time.Now()
@@ -45,6 +50,18 @@ func UpdateTodoItem(db *sqlx.DB, item *TodoItem) error {
 	}
 
 	return nil
+}
+
+func DeleteTodoItem(db *sqlx.DB, id int64) error {
+	if result, err := db.Exec(TODO_ITEM_DELETE_QUERY, id); err != nil {
+		return err
+	} else if affected, err := result.RowsAffected(); err != nil {
+		return err
+	} else if affected == 0 {
+		return ItemNotFound
+	} else {
+		return nil
+	}
 }
 
 func GetAllTodoItems(db *sqlx.DB) ([]*TodoItem, error) {

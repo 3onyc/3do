@@ -1,9 +1,14 @@
 package model
 
 import (
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"lib/util"
 	"time"
+)
+
+var (
+	GroupNotFound = errors.New("List Not Found")
 )
 
 type TodoGroup struct {
@@ -43,6 +48,18 @@ func UpdateTodoGroup(db *sqlx.DB, group *TodoGroup) error {
 	}
 
 	return nil
+}
+
+func DeleteTodoGroup(db *sqlx.DB, id int64) error {
+	if result, err := db.Exec(TODO_GROUP_DELETE_QUERY, id); err != nil {
+		return err
+	} else if affected, err := result.RowsAffected(); err != nil {
+		return err
+	} else if affected == 0 {
+		return GroupNotFound
+	} else {
+		return nil
+	}
 }
 
 func SetGroupItemIDs(db *sqlx.DB, g *TodoGroup) error {

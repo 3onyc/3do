@@ -29,6 +29,12 @@ var (
 		WHERE
 			"id" = :id
 	`
+	TODO_GROUP_DELETE_QUERY = `
+		DELETE FROM
+			"todo_groups"
+		WHERE
+			"id" = :id
+	`
 	TODO_GROUP_SELECT_QUERY = `
 		SELECT
 			"id",

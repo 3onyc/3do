@@ -29,6 +29,12 @@ var (
 		WHERE
 			"id" = :id
 	`
+	TODO_LIST_DELETE_QUERY = `
+		DELETE FROM
+			"todo_lists"
+		WHERE
+			"id" = :id
+	`
 	TODO_LIST_SELECT_QUERY = `
 		SELECT
 			"id",

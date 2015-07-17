@@ -1,9 +1,14 @@
 package model
 
 import (
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"lib/util"
 	"time"
+)
+
+var (
+	ListNotFound = errors.New("List Not Found")
 )
 
 type TodoList struct {
@@ -43,6 +48,18 @@ func UpdateTodoList(db *sqlx.DB, list *TodoList) error {
 	}
 
 	return nil
+}
+
+func DeleteTodoList(db *sqlx.DB, id int64) error {
+	if result, err := db.Exec(TODO_LIST_DELETE_QUERY, id); err != nil {
+		return err
+	} else if affected, err := result.RowsAffected(); err != nil {
+		return err
+	} else if affected == 0 {
+		return ListNotFound
+	} else {
+		return nil
+	}
 }
 
 func SetListGroupIDs(db *sqlx.DB, l *TodoList) error {
