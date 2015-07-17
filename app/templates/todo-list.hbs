@@ -1,0 +1,8 @@
+<h1 class='page-title'>{{model.title}}</h1>
+{{#link-to 'todo-list-edit' model}}
+  Edit
+{{/link-to}}
+
+{{#each group in model.groups}}
+  {{todo-group group=group action="createTodoItem"}}
+{{/each}}

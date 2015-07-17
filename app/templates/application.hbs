@@ -1,3 +1,15 @@
-<h2 id="title">Welcome to 3do</h2>
-
-{{outlet}}
+<div class='wrapper'>
+  <div class='menu'>
+    <span class="branding">3do</span>
+    <ul class="menu-items">
+      <li>
+        {{#link-to 'todo-lists'}}
+          All
+        {{/link-to}}
+      </li>
+    </ul>
+  </div>
+  <div class="content">
+    {{outlet}}
+  </div>
+</div>

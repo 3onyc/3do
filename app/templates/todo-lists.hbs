@@ -1,0 +1,24 @@
+<h1 class='page-title'>Todo Lists</h1>
+<ul class='todo-lists'>
+  {{#each list in model}}
+    <li class='todo-list'>
+      {{#link-to 'todo-list' list}}
+        {{list.title}}
+      {{/link-to}}
+    </li>
+  {{/each}}
+  <li class='todo-list new-todo-list'>
+    {{#unless creatingList}}
+      <button {{action 'createList'}}>+</button>
+    {{else}}
+      {{view "input-autofocus"
+        type="text"
+        id="new-todo-list"
+        placeholder="Create a new list"
+        value=newTitle
+        enter="saveList"
+        blur="saveList"
+      }}
+    {{/unless}}
+  </li>
+</ul>

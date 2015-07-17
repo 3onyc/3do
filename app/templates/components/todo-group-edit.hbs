@@ -1,0 +1,28 @@
+<div class='todo-group'>
+  <h3 class='todo-group-title'>
+    <button {{action 'delete'}}>X</button>
+    {{#unless editingTitle }}
+      <span {{action "editTitle"}}>{{group.title}}</span>
+    {{else}}
+      {{view "input-autofocus"
+        value=group.title
+        autofocus="autofocus"
+        enter="saveTitle"
+        focus-out="saveTitle"
+      }}
+    {{/unless}}
+  </h3>
+  <ul class='todo-items'>
+    {{#each item in group.items}}
+      {{todo-item-edit item=item}}
+    {{/each}}
+    <li>
+      {{input
+        type="text"
+        placeholder="Create a new todo"
+        value=newItemTitle
+        action="newItem"
+      }}
+    </li>
+  </ul>
+</div>

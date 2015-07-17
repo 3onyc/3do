@@ -1,0 +1,60 @@
+body {
+    font-family: sans-serif;
+    color: #333;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+    margin-top: 5rem;
+}
+
+h1 { font-size: 3.5rem; }
+h2 { font-size: 3rem; }
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0.414em 0px 0.5em;
+}
+
+.wrapper {
+    max-width: 48rem;
+    margin: 0 auto;
+}
+
+.menu-items {
+    float: right;
+    list-style: none;
+    margin: 0;
+}
+
+.todo-item-description {
+    font-size: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1px;
+}
+
+.edit-description button {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: 100%;
+    font-size: 1.5rem;
+}
+
+.edit-description textarea {
+    font-family: monospace;
+    width: 99%;
+    height: 8rem;
+}
+
+.todo-group:hover {
+    background-color: #EEE;
+}
+
+.todo-item:hover {
+    background-color: #DDD;
+}
+
+.todo-item-description h1 { font-size: 2rem; }
+.todo-item-description h2 { font-size: 1.5rem; }
+.todo-item-description h3 { font-size: 1.2rem; }

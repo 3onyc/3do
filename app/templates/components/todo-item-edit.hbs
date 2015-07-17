@@ -1,0 +1,46 @@
+<li class='todo-item todo-item-edit'>
+  <button {{action 'delete'}}>X</button>
+  {{#if item.done }}
+    <button {{action 'todo'}}>&cross;</button>
+  {{else}}
+    <button {{action 'done'}}>&check;</button>
+  {{/if}}
+
+  <span class='todo-item-title' {{action 'editTitle'}}>
+    {{#unless editingTitle}}
+      {{#if item.done}}
+        <del>{{item.title}}</del>
+      {{else}}
+        {{item.title}}
+      {{/if}}
+    {{else}}
+      {{view "input-autofocus"
+        value=item.title
+        autofocus="autofocus"
+        enter="saveTitle"
+        focus-out="saveTitle"
+      }}
+    {{/unless}}
+  </span>
+
+  {{#unless item.done }}
+    {{#unless editingDescription }}
+      <p class='todo-item-description' {{action 'editDescription'}}>
+        {{#if item.hasDescription }}
+          {{render-markdown item.description}}
+        {{else}}
+          <em>Click/tap to add description</em>
+        {{/if}}
+      </p>
+    {{else}}
+      <p class='todo-item-description edit-description'>
+        {{view "textarea-autofocus"
+          value=item.description
+          autofocus="autofocus"
+          focus-out="saveDescription"
+        }}
+        <button {{action 'saveDescription'}}>Save</button>
+      </p>
+    {{/unless}}
+  {{/unless}}
+</li>

@@ -1,0 +1,10 @@
+<div class='todo-group'>
+  <h3 class='todo-group-title'>
+    {{group.title}}
+  </h3>
+  <ul class='todo-group-items'>
+    {{#each item in group.items}}
+      {{todo-item item=item}}
+    {{/each}}
+  </ul>
+</div>
