@@ -51,7 +51,11 @@ func addStaticRoute() {
 }
 
 func startHTTPServer() {
-	log.Printf("Frontend located at %s\n", *FRONTEND_PATH)
+	if *DEBUG {
+		log.Printf("Frontend located at %s\n", *FRONTEND_URL)
+	} else {
+		log.Printf("Frontend located at %s\n", *FRONTEND_PATH)
+	}
 	log.Printf("Listening on :%d\n", *WEB_PORT)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *WEB_PORT), lib.Routes); err != nil {
