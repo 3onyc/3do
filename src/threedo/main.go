@@ -16,7 +16,8 @@ var (
 	WEB_PORT      = flag.Uint64("port", 8080, "Port for the webserver to listen on")
 	FRONTEND_PATH = flag.String("frontend", "frontend", "Path to frontend files")
 	DEBUG         = flag.Bool("debug", false, "Debug mode")
-	DB_SEED       = flag.Bool("seed", false, "Seed the DB with initial values")
+	DB_SEED       = flag.Bool("db-seed", false, "Seed the DB with initial values")
+	DB_URI        = flag.String("db-uri", ":memory:", "Path/URI to store DB at")
 	FRONTEND_URL  = flag.String(
 		"frontend-url",
 		"http://localhost:4200",
@@ -25,8 +26,8 @@ var (
 )
 
 func initDB() {
-	log.Println("Initialising database...")
-	db := lib.GetDB()
+	log.Printf("Initialising database at %s...\n", *DB_URI)
+	db := lib.InitDB(*DB_URI)
 	lib.CreateDBSchema(db)
 
 	if *DB_SEED {

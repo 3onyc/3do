@@ -3,6 +3,7 @@ package lib
 import (
 	"github.com/jmoiron/sqlx"
 	"lib/model"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -11,10 +12,14 @@ var (
 	DB *sqlx.DB
 )
 
+func InitDB(uri string) *sqlx.DB {
+	DB = sqlx.MustConnect("sqlite3", "/tmp/3do.sqlite3")
+	return DB
+}
+
 func GetDB() *sqlx.DB {
 	if DB == nil {
-		DB = sqlx.MustConnect("sqlite3", "/tmp/3do.sqlite3")
-		return DB
+		log.Panic("DB not initialised, call lib.InitDB first")
 	}
 
 	return DB
