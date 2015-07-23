@@ -1,0 +1,15 @@
+[submodule "vendor/src/github.com/codegangsta/negroni"]
+	path = vendor/src/github.com/codegangsta/negroni
+	url = https://github.com/codegangsta/negroni.git
+[submodule "vendor/src/github.com/gorilla/context"]
+	path = vendor/src/github.com/gorilla/context
+	url = https://github.com/gorilla/context.git
+[submodule "vendor/src/github.com/gorilla/mux"]
+	path = vendor/src/github.com/gorilla/mux
+	url = https://github.com/gorilla/mux.git
+[submodule "vendor/src/github.com/jmoiron/sqlx"]
+	path = vendor/src/github.com/jmoiron/sqlx
+	url = https://github.com/jmoiron/sqlx.git
+[submodule "vendor/src/github.com/mattn/go-sqlite3"]
+	path = vendor/src/github.com/mattn/go-sqlite3
+	url = https://github.com/mattn/go-sqlite3.git
