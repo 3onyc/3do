@@ -58,7 +58,9 @@ func startHTTPServer() {
 	}
 	log.Printf("Listening on :%d\n", *WEB_PORT)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", *WEB_PORT), lib.Routes); err != nil {
+	routes := lib.GetRouteHandler()
+	addr := fmt.Sprintf(":%d", *WEB_PORT)
+	if err := http.ListenAndServe(addr, routes); err != nil {
 		log.Fatal(err)
 	}
 }
