@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/3onyc/threedo-backend"
+	"github.com/namsral/flag"
 	"log"
 	"net/http"
 	"net/http/httputil"

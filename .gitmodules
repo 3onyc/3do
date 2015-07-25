@@ -13,3 +13,6 @@
 [submodule "vendor/github.com/mattn/go-sqlite3"]
 	path = vendor/github.com/mattn/go-sqlite3
 	url = https://github.com/mattn/go-sqlite3.git
+[submodule "vendor/github.com/namsral/flag"]
+	path = vendor/github.com/namsral/flag
+	url = https://github.com/namsral/flag.git
