@@ -1,4 +1,3 @@
-// +build nobuild
 package api1
 
 import (
