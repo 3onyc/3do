@@ -1,4 +1,4 @@
-package threedo
+package middleware
 
 import (
 	"github.com/codegangsta/negroni"
@@ -13,7 +13,7 @@ type Logger struct {
 }
 
 func NewLogger() *Logger {
-	return &Logger{log.NewLogfmtLogger(os.Stderr)}
+	return &Logger{log.NewJSONLogger(os.Stderr)}
 }
 
 func (l *Logger) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

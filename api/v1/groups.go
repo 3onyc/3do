@@ -4,10 +4,10 @@ package api1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/3onyc/threedo-backend"
+	"github.com/3onyc/threedo-backend/api"
 	"github.com/3onyc/threedo-backend/model"
 	"github.com/3onyc/threedo-backend/util"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -21,7 +21,7 @@ type GroupGetResponse struct {
 }
 
 func groupsList(w http.ResponseWriter, r *http.Request) {
-	if groups, err := model.GetAllTodoGroups(threedo.GetDB()); err != nil {
+	if groups, err := model.GetAllTodoGroups(model.GetDB()); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &GroupListResponse{
@@ -36,7 +36,7 @@ func groupGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if group, err := model.FindTodoGroup(threedo.GetDB(), id); err != nil {
+	if group, err := model.FindTodoGroup(model.GetDB(), id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if group == nil {
 		http.Error(w, "Group not found", 404)
@@ -54,7 +54,7 @@ func groupPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := model.FindTodoGroup(threedo.GetDB(), id)
+	group, err := model.FindTodoGroup(model.GetDB(), id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -74,7 +74,7 @@ func groupPut(w http.ResponseWriter, r *http.Request) {
 	group.Title = payload.TodoGroup.Title
 	group.List = payload.TodoGroup.List
 
-	if err := model.UpdateTodoGroup(threedo.GetDB(), group); err != nil {
+	if err := model.UpdateTodoGroup(model.GetDB(), group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -97,7 +97,7 @@ func groupPost(w http.ResponseWriter, r *http.Request) {
 		List:  postGroup.List,
 	}
 
-	if err := model.InsertTodoGroup(threedo.GetDB(), group); err != nil {
+	if err := model.InsertTodoGroup(model.GetDB(), group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -114,7 +114,7 @@ func groupDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := model.DeleteTodoGroup(threedo.GetDB(), id); err == model.GroupNotFound {
+	if err := model.DeleteTodoGroup(model.GetDB(), id); err == model.GroupNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {
@@ -124,9 +124,9 @@ func groupDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	threedo.Routes.HandleFunc("/api/v1/todoGroups", groupsList).Methods("GET")
-	threedo.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupGet).Methods("GET")
-	threedo.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupPut).Methods("PUT")
-	threedo.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupDelete).Methods("DELETE")
-	threedo.Routes.HandleFunc("/api/v1/todoGroups", groupPost).Methods("POST")
+	api.Routes.HandleFunc("/api/v1/todoGroups", groupsList).Methods("GET")
+	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupGet).Methods("GET")
+	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupPut).Methods("PUT")
+	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupDelete).Methods("DELETE")
+	api.Routes.HandleFunc("/api/v1/todoGroups", groupPost).Methods("POST")
 }

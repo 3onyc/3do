@@ -1,6 +1,7 @@
-package threedo
+package api
 
 import (
+	"github.com/3onyc/threedo-backend/middleware"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -12,7 +13,7 @@ var (
 
 func GetRouteHandler() http.Handler {
 	n := negroni.New(
-		NewLogger(),
+		middleware.NewLogger(),
 		negroni.NewRecovery(),
 	)
 

@@ -4,10 +4,10 @@ package api1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/3onyc/threedo-backend"
+	"github.com/3onyc/threedo-backend/api"
 	"github.com/3onyc/threedo-backend/model"
 	"github.com/3onyc/threedo-backend/util"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -21,7 +21,7 @@ type ItemGetResponse struct {
 }
 
 func itemsList(w http.ResponseWriter, r *http.Request) {
-	if items, err := model.GetAllTodoItems(threedo.GetDB()); err != nil {
+	if items, err := model.GetAllTodoItems(model.GetDB()); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &ItemListResponse{
@@ -36,7 +36,7 @@ func itemGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if item, err := model.FindTodoItem(threedo.GetDB(), id); err != nil {
+	if item, err := model.FindTodoItem(model.GetDB(), id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if item == nil {
 		http.Error(w, "Item not found", 404)
@@ -54,7 +54,7 @@ func itemPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item, err := model.FindTodoItem(threedo.GetDB(), id)
+	item, err := model.FindTodoItem(model.GetDB(), id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -77,7 +77,7 @@ func itemPut(w http.ResponseWriter, r *http.Request) {
 	item.DoneAt = payload.TodoItem.DoneAt
 	item.Group = payload.TodoItem.Group
 
-	if err := model.UpdateTodoItem(threedo.GetDB(), item); err != nil {
+	if err := model.UpdateTodoItem(model.GetDB(), item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -103,7 +103,7 @@ func itemPost(w http.ResponseWriter, r *http.Request) {
 		Group:       postItem.Group,
 	}
 
-	if err := model.InsertTodoItem(threedo.GetDB(), item); err != nil {
+	if err := model.InsertTodoItem(model.GetDB(), item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -120,7 +120,7 @@ func itemDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := model.DeleteTodoItem(threedo.GetDB(), id); err == model.ItemNotFound {
+	if err := model.DeleteTodoItem(model.GetDB(), id); err == model.ItemNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {
@@ -130,9 +130,9 @@ func itemDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	threedo.Routes.HandleFunc("/api/v1/todoItems", itemsList).Methods("GET")
-	threedo.Routes.HandleFunc("/api/v1/todoItems/{id}", itemGet).Methods("GET")
-	threedo.Routes.HandleFunc("/api/v1/todoItems/{id}", itemPut).Methods("PUT")
-	threedo.Routes.HandleFunc("/api/v1/todoItems/{id}", itemDelete).Methods("DELETE")
-	threedo.Routes.HandleFunc("/api/v1/todoItems", itemPost).Methods("POST")
+	api.Routes.HandleFunc("/api/v1/todoItems", itemsList).Methods("GET")
+	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemGet).Methods("GET")
+	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemPut).Methods("PUT")
+	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemDelete).Methods("DELETE")
+	api.Routes.HandleFunc("/api/v1/todoItems", itemPost).Methods("POST")
 }

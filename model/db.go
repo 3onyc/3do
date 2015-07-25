@@ -1,8 +1,7 @@
-package threedo
+package model
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/3onyc/threedo-backend/model"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -73,48 +72,48 @@ func CreateDBSchema(db *sqlx.DB) {
 }
 
 func SeedDB(db *sqlx.DB) error {
-	l1 := &model.TodoList{
+	l1 := &TodoList{
 		Title:       "Hello",
 		Description: "Foo",
 	}
-	l2 := &model.TodoList{
+	l2 := &TodoList{
 		Title:       "Bye",
 		Description: "Bar",
 	}
 
-	g1 := &model.TodoGroup{
+	g1 := &TodoGroup{
 		Title: "Group 1",
 	}
 
-	i1 := &model.TodoItem{
+	i1 := &TodoItem{
 		Title:       "Item 1",
 		Description: "# Foo",
 		Done:        false,
 	}
-	i2 := &model.TodoItem{
+	i2 := &TodoItem{
 		Title:       "Item 2",
 		Description: "Bar",
 		Done:        false,
 	}
 
-	if err := model.InsertTodoList(db, l1); err != nil {
+	if err := InsertTodoList(db, l1); err != nil {
 		return err
 	}
-	if err := model.InsertTodoList(db, l2); err != nil {
+	if err := InsertTodoList(db, l2); err != nil {
 		return err
 	}
 
 	g1.List = l1.ID.Int64
-	if err := model.InsertTodoGroup(db, g1); err != nil {
+	if err := InsertTodoGroup(db, g1); err != nil {
 		return err
 	}
 
 	i1.Group = g1.ID.Int64
 	i2.Group = g1.ID.Int64
-	if err := model.InsertTodoItem(db, i1); err != nil {
+	if err := InsertTodoItem(db, i1); err != nil {
 		return err
 	}
-	if err := model.InsertTodoItem(db, i2); err != nil {
+	if err := InsertTodoItem(db, i2); err != nil {
 		return err
 	}
 

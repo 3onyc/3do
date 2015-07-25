@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/3onyc/threedo-backend"
+	"github.com/3onyc/threedo-backend/api"
+	"github.com/3onyc/threedo-backend/model"
 	"github.com/namsral/flag"
 	"log"
 	"net/http"
@@ -27,12 +28,12 @@ var (
 
 func initDB() {
 	log.Printf("Initialising database at %s...\n", *DB_URI)
-	db := threedo.InitDB(*DB_URI)
-	threedo.CreateDBSchema(db)
+	db := model.InitDB(*DB_URI)
+	model.CreateDBSchema(db)
 
 	if *DB_SEED {
 		log.Println("Seeding database...")
-		if err := threedo.SeedDB(db); err != nil {
+		if err := model.SeedDB(db); err != nil {
 			log.Fatalln(err)
 		}
 	}
@@ -44,9 +45,9 @@ func addStaticRoute() {
 		if err != nil {
 			log.Fatal("Couldn't parse frontend URL")
 		}
-		threedo.Routes.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
+		api.Routes.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
 	} else {
-		threedo.Routes.PathPrefix("/").Handler(http.FileServer(http.Dir(*FRONTEND_PATH)))
+		api.Routes.PathPrefix("/").Handler(http.FileServer(http.Dir(*FRONTEND_PATH)))
 	}
 }
 
@@ -58,7 +59,7 @@ func startHTTPServer() {
 	}
 	log.Printf("Listening on :%d\n", *WEB_PORT)
 
-	routes := threedo.GetRouteHandler()
+	routes := api.GetRouteHandler()
 	addr := fmt.Sprintf(":%d", *WEB_PORT)
 	if err := http.ListenAndServe(addr, routes); err != nil {
 		log.Fatal(err)
