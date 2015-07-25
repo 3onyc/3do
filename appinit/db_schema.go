@@ -1,14 +1,10 @@
-package model
+package appinit
 
 import (
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
-func InitDB(uri string) *sqlx.DB {
-	return sqlx.MustConnect("sqlite3", uri)
-}
 
 func CreateDBSchema(db *sqlx.DB) {
 	db.MustExec(`

@@ -1,10 +1,11 @@
-package util
+package appinit
 
 import (
 	"github.com/3onyc/threedo-backend/model"
+	"github.com/3onyc/threedo-backend/util"
 )
 
-func SeedDB(ctx *Context) error {
+func SeedDB(ctx *util.Context) error {
 	l1 := &model.TodoList{
 		Title:       "Hello",
 		Description: "Foo",

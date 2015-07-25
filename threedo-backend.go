@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/3onyc/threedo-backend/api/v1"
-	"github.com/3onyc/threedo-backend/model"
+	"github.com/3onyc/threedo-backend/appinit"
 	"github.com/3onyc/threedo-backend/util"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -31,8 +31,8 @@ var (
 
 func initDB() *sqlx.DB {
 	log.Printf("Initialising database at %s...\n", *DB_URI)
-	db := model.InitDB(*DB_URI)
-	model.CreateDBSchema(db)
+	db := sqlx.MustConnect("sqlite", *DB_URI)
+	appinit.CreateDBSchema(db)
 
 	return db
 }
@@ -40,7 +40,7 @@ func initDB() *sqlx.DB {
 func seedDB(ctx *util.Context) {
 	if *DB_SEED {
 		log.Println("Seeding database...")
-		if err := util.SeedDB(ctx); err != nil {
+		if err := appinit.SeedDB(ctx); err != nil {
 			log.Fatalln(err)
 		}
 	}
