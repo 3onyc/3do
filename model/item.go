@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+var (
+	ItemNotFound = errors.New("Item Not Found")
+)
+
 type TodoItem struct {
 	ID          util.NullInt64 `json:"id,string"`
 	Title       string         `json:"title"`
@@ -17,10 +21,6 @@ type TodoItem struct {
 	UpdatedAt   *time.Time     `json:"updatedAt" db:"updated_at"`
 	Group       int64          `json:"group,string" db:"group_id"`
 }
-
-var (
-	ItemNotFound = errors.New("Item Not Found")
-)
 
 func InsertTodoItem(db *sqlx.DB, item *TodoItem) error {
 	now := time.Now()
