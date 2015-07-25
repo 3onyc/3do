@@ -35,7 +35,7 @@ type ItemGetResponse struct {
 }
 
 func (i *ItemsAPI) list(w http.ResponseWriter, r *http.Request) {
-	if items, err := model.GetAllTodoItems(i.DB); err != nil {
+	if items, err := i.Items.GetAll(); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &ItemListResponse{
@@ -50,7 +50,7 @@ func (i *ItemsAPI) get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if item, err := model.FindTodoItem(i.DB, id); err != nil {
+	if item, err := i.Items.Find(id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if item == nil {
 		http.Error(w, "Item not found", 404)
@@ -68,7 +68,7 @@ func (i *ItemsAPI) put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item, err := model.FindTodoItem(i.DB, id)
+	item, err := i.Items.Find(id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -91,7 +91,7 @@ func (i *ItemsAPI) put(w http.ResponseWriter, r *http.Request) {
 	item.DoneAt = payload.TodoItem.DoneAt
 	item.Group = payload.TodoItem.Group
 
-	if err := model.UpdateTodoItem(i.DB, item); err != nil {
+	if err := i.Items.Update(item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -117,7 +117,7 @@ func (i *ItemsAPI) post(w http.ResponseWriter, r *http.Request) {
 		Group:       postItem.Group,
 	}
 
-	if err := model.InsertTodoItem(i.DB, item); err != nil {
+	if err := i.Items.Insert(item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -134,7 +134,7 @@ func (i *ItemsAPI) delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := model.DeleteTodoItem(i.DB, id); err == model.ItemNotFound {
+	if err := i.Items.Delete(id); err == model.ItemNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {

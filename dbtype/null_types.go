@@ -1,4 +1,4 @@
-package util
+package dbtype
 
 import (
 	"database/sql"

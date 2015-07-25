@@ -35,7 +35,7 @@ type ListGetResponse struct {
 }
 
 func (l *ListsAPI) list(w http.ResponseWriter, r *http.Request) {
-	if lists, err := model.GetAllTodoLists(l.DB); err != nil {
+	if lists, err := l.Lists.GetAll(); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &ListListResponse{
@@ -50,7 +50,7 @@ func (l *ListsAPI) get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if list, err := model.FindTodoList(l.DB, id); err != nil {
+	if list, err := l.Lists.Find(id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if list == nil {
 		http.Error(w, "List not found", 404)
@@ -68,7 +68,7 @@ func (l *ListsAPI) put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := model.FindTodoList(l.DB, id)
+	list, err := l.Lists.Find(id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -88,7 +88,7 @@ func (l *ListsAPI) put(w http.ResponseWriter, r *http.Request) {
 	list.Title = payload.TodoList.Title
 	list.Description = payload.TodoList.Description
 
-	if err := model.UpdateTodoList(l.DB, list); err != nil {
+	if err := l.Lists.Update(list); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -111,7 +111,7 @@ func (l *ListsAPI) post(w http.ResponseWriter, r *http.Request) {
 		Description: postList.Description,
 	}
 
-	if err := model.InsertTodoList(l.DB, list); err != nil {
+	if err := l.Lists.Insert(list); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -128,7 +128,7 @@ func (l *ListsAPI) delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := model.DeleteTodoList(l.DB, id); err == model.ListNotFound {
+	if err := l.Lists.Delete(id); err == model.ListNotFound {
 		http.Error(w, "List not found", 404)
 		return
 	} else if err != nil {

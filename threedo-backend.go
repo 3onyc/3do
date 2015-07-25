@@ -34,14 +34,16 @@ func initDB() *sqlx.DB {
 	db := model.InitDB(*DB_URI)
 	model.CreateDBSchema(db)
 
+	return db
+}
+
+func seedDB(ctx *util.Context) {
 	if *DB_SEED {
 		log.Println("Seeding database...")
-		if err := model.SeedDB(db); err != nil {
+		if err := util.SeedDB(ctx); err != nil {
 			log.Fatalln(err)
 		}
 	}
-
-	return db
 }
 
 func addStaticRoute(router *mux.Router) {
@@ -84,6 +86,7 @@ func main() {
 
 	ctx := util.NewContext(router, db)
 	initRoutes(ctx)
+	seedDB(ctx)
 
 	addStaticRoute(router)
 	startHTTPServer(router)

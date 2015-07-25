@@ -35,7 +35,7 @@ func (g *GroupsAPI) Register() {
 }
 
 func (g *GroupsAPI) list(w http.ResponseWriter, r *http.Request) {
-	if groups, err := model.GetAllTodoGroups(g.DB); err != nil {
+	if groups, err := g.Groups.GetAll(); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &GroupListResponse{
@@ -50,7 +50,7 @@ func (g *GroupsAPI) get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if group, err := model.FindTodoGroup(g.DB, id); err != nil {
+	if group, err := g.Groups.Find(id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if group == nil {
 		http.Error(w, "Group not found", 404)
@@ -68,7 +68,7 @@ func (g *GroupsAPI) put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := model.FindTodoGroup(g.DB, id)
+	group, err := g.Groups.Find(id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -88,7 +88,7 @@ func (g *GroupsAPI) put(w http.ResponseWriter, r *http.Request) {
 	group.Title = payload.TodoGroup.Title
 	group.List = payload.TodoGroup.List
 
-	if err := model.UpdateTodoGroup(g.DB, group); err != nil {
+	if err := g.Groups.Update(group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -111,7 +111,7 @@ func (g *GroupsAPI) post(w http.ResponseWriter, r *http.Request) {
 		List:  postGroup.List,
 	}
 
-	if err := model.InsertTodoGroup(g.DB, group); err != nil {
+	if err := g.Groups.Insert(group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -128,7 +128,7 @@ func (g *GroupsAPI) delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := model.DeleteTodoGroup(g.DB, id); err == model.GroupNotFound {
+	if err := g.Groups.Delete(id); err == model.GroupNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {
