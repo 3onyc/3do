@@ -12,7 +12,7 @@ var (
 )
 
 func InitDB(uri string) *sqlx.DB {
-	DB = sqlx.MustConnect("sqlite3", "/tmp/3do.sqlite3")
+	DB = sqlx.MustConnect("sqlite3", uri)
 	return DB
 }
 
