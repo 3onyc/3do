@@ -3,7 +3,7 @@ package model
 import (
 	"errors"
 	"github.com/jmoiron/sqlx"
-	"lib/util"
+	"github.com/3onyc/threedo-backend/util"
 	"time"
 )
 

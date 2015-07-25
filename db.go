@@ -1,8 +1,8 @@
-package lib
+package threedo
 
 import (
 	"github.com/jmoiron/sqlx"
-	"lib/model"
+	"github.com/3onyc/threedo-backend/model"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -19,7 +19,7 @@ func InitDB(uri string) *sqlx.DB {
 
 func GetDB() *sqlx.DB {
 	if DB == nil {
-		log.Panic("DB not initialised, call lib.InitDB first")
+		log.Panic("DB not initialised, call threedo.InitDB first")
 	}
 
 	return DB
