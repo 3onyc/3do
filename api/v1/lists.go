@@ -3,13 +3,28 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/3onyc/threedo-backend/api"
 	"github.com/3onyc/threedo-backend/model"
 	"github.com/3onyc/threedo-backend/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
+
+type ListsAPI struct {
+	*util.Context
+}
+
+func NewListsAPI(ctx *util.Context) *ListsAPI {
+	return &ListsAPI{ctx}
+}
+
+func (l *ListsAPI) Register() {
+	l.Router.HandleFunc("/api/v1/todoLists", l.list).Methods("GET")
+	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.get).Methods("GET")
+	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.put).Methods("PUT")
+	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.delete).Methods("DELETE")
+	l.Router.HandleFunc("/api/v1/todoLists", l.post).Methods("POST")
+}
 
 type ListListResponse struct {
 	TodoLists []*model.TodoList `json:"todoLists"`
@@ -19,8 +34,8 @@ type ListGetResponse struct {
 	TodoList *model.TodoList `json:"todoList"`
 }
 
-func listsList(w http.ResponseWriter, r *http.Request) {
-	if lists, err := model.GetAllTodoLists(model.GetDB()); err != nil {
+func (l *ListsAPI) list(w http.ResponseWriter, r *http.Request) {
+	if lists, err := model.GetAllTodoLists(l.DB); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &ListListResponse{
@@ -29,13 +44,13 @@ func listsList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func listGet(w http.ResponseWriter, r *http.Request) {
+func (l *ListsAPI) get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if list, err := model.FindTodoList(model.GetDB(), id); err != nil {
+	if list, err := model.FindTodoList(l.DB, id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if list == nil {
 		http.Error(w, "List not found", 404)
@@ -46,14 +61,14 @@ func listGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func listPut(w http.ResponseWriter, r *http.Request) {
+func (l *ListsAPI) put(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	list, err := model.FindTodoList(model.GetDB(), id)
+	list, err := model.FindTodoList(l.DB, id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -73,7 +88,7 @@ func listPut(w http.ResponseWriter, r *http.Request) {
 	list.Title = payload.TodoList.Title
 	list.Description = payload.TodoList.Description
 
-	if err := model.UpdateTodoList(model.GetDB(), list); err != nil {
+	if err := model.UpdateTodoList(l.DB, list); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -83,7 +98,7 @@ func listPut(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func listPost(w http.ResponseWriter, r *http.Request) {
+func (l *ListsAPI) post(w http.ResponseWriter, r *http.Request) {
 	var payload = &ListGetResponse{}
 	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 		http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
@@ -96,7 +111,7 @@ func listPost(w http.ResponseWriter, r *http.Request) {
 		Description: postList.Description,
 	}
 
-	if err := model.InsertTodoList(model.GetDB(), list); err != nil {
+	if err := model.InsertTodoList(l.DB, list); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -106,26 +121,18 @@ func listPost(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func listDelete(w http.ResponseWriter, r *http.Request) {
+func (l *ListsAPI) delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	if err := model.DeleteTodoList(model.GetDB(), id); err == model.ListNotFound {
+	if err := model.DeleteTodoList(l.DB, id); err == model.ListNotFound {
 		http.Error(w, "List not found", 404)
 		return
 	} else if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-}
-
-func init() {
-	api.Routes.HandleFunc("/api/v1/todoLists", listsList).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoLists/{id}", listGet).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoLists/{id}", listPut).Methods("PUT")
-	api.Routes.HandleFunc("/api/v1/todoLists/{id}", listDelete).Methods("DELETE")
-	api.Routes.HandleFunc("/api/v1/todoLists", listPost).Methods("POST")
 }

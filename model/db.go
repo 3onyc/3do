@@ -2,26 +2,12 @@ package model
 
 import (
 	"github.com/jmoiron/sqlx"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
-	DB *sqlx.DB
-)
-
 func InitDB(uri string) *sqlx.DB {
-	DB = sqlx.MustConnect("sqlite3", uri)
-	return DB
-}
-
-func GetDB() *sqlx.DB {
-	if DB == nil {
-		log.Panic("DB not initialised, call threedo.InitDB first")
-	}
-
-	return DB
+	return sqlx.MustConnect("sqlite3", uri)
 }
 
 func CreateDBSchema(db *sqlx.DB) {

@@ -3,13 +3,20 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/3onyc/threedo-backend/api"
 	"github.com/3onyc/threedo-backend/model"
 	"github.com/3onyc/threedo-backend/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
+
+type GroupsAPI struct {
+	*util.Context
+}
+
+func NewGroupsAPI(ctx *util.Context) *GroupsAPI {
+	return &GroupsAPI{ctx}
+}
 
 type GroupListResponse struct {
 	TodoGroups []*model.TodoGroup `json:"todoGroups"`
@@ -19,8 +26,16 @@ type GroupGetResponse struct {
 	TodoGroup *model.TodoGroup `json:"todoGroup"`
 }
 
-func groupsList(w http.ResponseWriter, r *http.Request) {
-	if groups, err := model.GetAllTodoGroups(model.GetDB()); err != nil {
+func (g *GroupsAPI) Register() {
+	g.Router.HandleFunc("/api/v1/todoGroups", g.list).Methods("GET")
+	g.Router.HandleFunc("/api/v1/todoGroups/{id}", g.get).Methods("GET")
+	g.Router.HandleFunc("/api/v1/todoGroups/{id}", g.put).Methods("PUT")
+	g.Router.HandleFunc("/api/v1/todoGroups/{id}", g.delete).Methods("DELETE")
+	g.Router.HandleFunc("/api/v1/todoGroups", g.post).Methods("POST")
+}
+
+func (g *GroupsAPI) list(w http.ResponseWriter, r *http.Request) {
+	if groups, err := model.GetAllTodoGroups(g.DB); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &GroupListResponse{
@@ -29,13 +44,13 @@ func groupsList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func groupGet(w http.ResponseWriter, r *http.Request) {
+func (g *GroupsAPI) get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if group, err := model.FindTodoGroup(model.GetDB(), id); err != nil {
+	if group, err := model.FindTodoGroup(g.DB, id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if group == nil {
 		http.Error(w, "Group not found", 404)
@@ -46,14 +61,14 @@ func groupGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func groupPut(w http.ResponseWriter, r *http.Request) {
+func (g *GroupsAPI) put(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	group, err := model.FindTodoGroup(model.GetDB(), id)
+	group, err := model.FindTodoGroup(g.DB, id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -73,7 +88,7 @@ func groupPut(w http.ResponseWriter, r *http.Request) {
 	group.Title = payload.TodoGroup.Title
 	group.List = payload.TodoGroup.List
 
-	if err := model.UpdateTodoGroup(model.GetDB(), group); err != nil {
+	if err := model.UpdateTodoGroup(g.DB, group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -83,7 +98,7 @@ func groupPut(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func groupPost(w http.ResponseWriter, r *http.Request) {
+func (g *GroupsAPI) post(w http.ResponseWriter, r *http.Request) {
 	var payload = &GroupGetResponse{}
 	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 		http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
@@ -96,7 +111,7 @@ func groupPost(w http.ResponseWriter, r *http.Request) {
 		List:  postGroup.List,
 	}
 
-	if err := model.InsertTodoGroup(model.GetDB(), group); err != nil {
+	if err := model.InsertTodoGroup(g.DB, group); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -106,26 +121,18 @@ func groupPost(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func groupDelete(w http.ResponseWriter, r *http.Request) {
+func (g *GroupsAPI) delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	if err := model.DeleteTodoGroup(model.GetDB(), id); err == model.GroupNotFound {
+	if err := model.DeleteTodoGroup(g.DB, id); err == model.GroupNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-}
-
-func init() {
-	api.Routes.HandleFunc("/api/v1/todoGroups", groupsList).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupGet).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupPut).Methods("PUT")
-	api.Routes.HandleFunc("/api/v1/todoGroups/{id}", groupDelete).Methods("DELETE")
-	api.Routes.HandleFunc("/api/v1/todoGroups", groupPost).Methods("POST")
 }

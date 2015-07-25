@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/3onyc/threedo-backend/api"
+	"github.com/3onyc/threedo-backend/api/v1"
 	"github.com/3onyc/threedo-backend/model"
+	"github.com/3onyc/threedo-backend/util"
+	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 	"github.com/namsral/flag"
 	"log"
 	"net/http"
@@ -26,7 +29,7 @@ var (
 	)
 )
 
-func initDB() {
+func initDB() *sqlx.DB {
 	log.Printf("Initialising database at %s...\n", *DB_URI)
 	db := model.InitDB(*DB_URI)
 	model.CreateDBSchema(db)
@@ -37,21 +40,29 @@ func initDB() {
 			log.Fatalln(err)
 		}
 	}
+
+	return db
 }
 
-func addStaticRoute() {
+func addStaticRoute(router *mux.Router) {
 	if *DEBUG {
 		u, err := url.Parse(*FRONTEND_URL)
 		if err != nil {
 			log.Fatal("Couldn't parse frontend URL")
 		}
-		api.Routes.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
+		router.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
 	} else {
-		api.Routes.PathPrefix("/").Handler(http.FileServer(http.Dir(*FRONTEND_PATH)))
+		router.PathPrefix("/").Handler(http.FileServer(http.Dir(*FRONTEND_PATH)))
 	}
 }
 
-func startHTTPServer() {
+func initRoutes(ctx *util.Context) {
+	v1.NewListsAPI(ctx).Register()
+	v1.NewGroupsAPI(ctx).Register()
+	v1.NewItemsAPI(ctx).Register()
+}
+
+func startHTTPServer(router *mux.Router) {
 	if *DEBUG {
 		log.Printf("Frontend located at %s\n", *FRONTEND_URL)
 	} else {
@@ -59,9 +70,8 @@ func startHTTPServer() {
 	}
 	log.Printf("Listening on :%d\n", *WEB_PORT)
 
-	routes := api.GetRouteHandler()
 	addr := fmt.Sprintf(":%d", *WEB_PORT)
-	if err := http.ListenAndServe(addr, routes); err != nil {
+	if err := http.ListenAndServe(addr, router); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -69,7 +79,12 @@ func startHTTPServer() {
 func main() {
 	flag.Parse()
 
-	initDB()
-	addStaticRoute()
-	startHTTPServer()
+	router := mux.NewRouter()
+	db := initDB()
+
+	ctx := util.NewContext(router, db)
+	initRoutes(ctx)
+
+	addStaticRoute(router)
+	startHTTPServer(router)
 }

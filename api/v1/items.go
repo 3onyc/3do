@@ -3,13 +3,28 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/3onyc/threedo-backend/api"
 	"github.com/3onyc/threedo-backend/model"
 	"github.com/3onyc/threedo-backend/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
+
+type ItemsAPI struct {
+	*util.Context
+}
+
+func NewItemsAPI(ctx *util.Context) *ItemsAPI {
+	return &ItemsAPI{ctx}
+}
+
+func (i *ItemsAPI) Register() {
+	i.Router.HandleFunc("/api/v1/todoItems", i.list).Methods("GET")
+	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.get).Methods("GET")
+	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.put).Methods("PUT")
+	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.delete).Methods("DELETE")
+	i.Router.HandleFunc("/api/v1/todoItems", i.post).Methods("POST")
+}
 
 type ItemListResponse struct {
 	TodoItems []*model.TodoItem `json:"todoItems"`
@@ -19,8 +34,8 @@ type ItemGetResponse struct {
 	TodoItem *model.TodoItem `json:"todoItem"`
 }
 
-func itemsList(w http.ResponseWriter, r *http.Request) {
-	if items, err := model.GetAllTodoItems(model.GetDB()); err != nil {
+func (i *ItemsAPI) list(w http.ResponseWriter, r *http.Request) {
+	if items, err := model.GetAllTodoItems(i.DB); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else {
 		util.WriteJSONResponse(w, &ItemListResponse{
@@ -29,13 +44,13 @@ func itemsList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func itemGet(w http.ResponseWriter, r *http.Request) {
+func (i *ItemsAPI) get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 
-	if item, err := model.FindTodoItem(model.GetDB(), id); err != nil {
+	if item, err := model.FindTodoItem(i.DB, id); err != nil {
 		http.Error(w, err.Error(), 500)
 	} else if item == nil {
 		http.Error(w, "Item not found", 404)
@@ -46,14 +61,14 @@ func itemGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func itemPut(w http.ResponseWriter, r *http.Request) {
+func (i *ItemsAPI) put(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	item, err := model.FindTodoItem(model.GetDB(), id)
+	item, err := model.FindTodoItem(i.DB, id)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -76,7 +91,7 @@ func itemPut(w http.ResponseWriter, r *http.Request) {
 	item.DoneAt = payload.TodoItem.DoneAt
 	item.Group = payload.TodoItem.Group
 
-	if err := model.UpdateTodoItem(model.GetDB(), item); err != nil {
+	if err := model.UpdateTodoItem(i.DB, item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -86,7 +101,7 @@ func itemPut(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func itemPost(w http.ResponseWriter, r *http.Request) {
+func (i *ItemsAPI) post(w http.ResponseWriter, r *http.Request) {
 	var payload = &ItemGetResponse{}
 	if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 		http.Error(w, fmt.Sprintf("Error encoding JSON (%s)", err), 500)
@@ -102,7 +117,7 @@ func itemPost(w http.ResponseWriter, r *http.Request) {
 		Group:       postItem.Group,
 	}
 
-	if err := model.InsertTodoItem(model.GetDB(), item); err != nil {
+	if err := model.InsertTodoItem(i.DB, item); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -112,26 +127,18 @@ func itemPost(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func itemDelete(w http.ResponseWriter, r *http.Request) {
+func (i *ItemsAPI) delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	if err := model.DeleteTodoItem(model.GetDB(), id); err == model.ItemNotFound {
+	if err := model.DeleteTodoItem(i.DB, id); err == model.ItemNotFound {
 		http.Error(w, err.Error(), 404)
 		return
 	} else if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-}
-
-func init() {
-	api.Routes.HandleFunc("/api/v1/todoItems", itemsList).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemGet).Methods("GET")
-	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemPut).Methods("PUT")
-	api.Routes.HandleFunc("/api/v1/todoItems/{id}", itemDelete).Methods("DELETE")
-	api.Routes.HandleFunc("/api/v1/todoItems", itemPost).Methods("POST")
 }
