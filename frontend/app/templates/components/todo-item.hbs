@@ -1,0 +1,12 @@
+  <li class='todo-item' {{action 'toggle'}}>
+    {{#if item.done }}
+      <del>{{item.title}}</del>
+    {{else}}
+      {{item.title}}
+      {{#if item.hasDescription }}
+        <p class='todo-item-description'>
+          {{render-markdown item.description}}
+        </p>
+      {{/if}}
+    {{/if}}
+  </li>
