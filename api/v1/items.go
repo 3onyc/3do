@@ -3,8 +3,8 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/3onyc/threedo-backend/model"
-	"github.com/3onyc/threedo-backend/util"
+	"github.com/3onyc/3do/model"
+	"github.com/3onyc/3do/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"

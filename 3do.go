@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/3onyc/threedo-backend/api/v1"
-	"github.com/3onyc/threedo-backend/appinit"
-	"github.com/3onyc/threedo-backend/util"
+	"github.com/3onyc/3do/api/v1"
+	"github.com/3onyc/3do/appinit"
+	"github.com/3onyc/3do/util"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/namsral/flag"
@@ -13,7 +13,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	_ "github.com/3onyc/threedo-backend/api/v1"
+	_ "github.com/3onyc/3do/api/v1"
 )
 
 var (

@@ -2,7 +2,7 @@ package model
 
 import (
 	"errors"
-	"github.com/3onyc/threedo-backend/dbtype"
+	"github.com/3onyc/3do/dbtype"
 	"github.com/jmoiron/sqlx"
 	"time"
 )

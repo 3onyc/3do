@@ -18,8 +18,8 @@ You will need the following things properly installed on your computer.
 
 ## Installation
 
-* `git clone https://github.com/3onyc/threedo-frontend.git` this repository
-* change into the new directory
+* `git clone https://github.com/3onyc/3do.git` this repository
+* `cd 3do/frontend`
 * `npm install`
 * `bower install`
 

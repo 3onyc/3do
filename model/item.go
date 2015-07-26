@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/3onyc/threedo-backend/dbtype"
+	"github.com/3onyc/3do/dbtype"
 	"time"
 )
 

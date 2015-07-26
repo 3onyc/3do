@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/3onyc/threedo-backend/model"
+	"github.com/3onyc/3do/model"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
