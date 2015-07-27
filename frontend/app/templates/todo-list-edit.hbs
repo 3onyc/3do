@@ -3,7 +3,7 @@
   Back
 {{/link-to}}
 
-{{#each group in model.groups}}
+{{#each model.groups as |group|}}
   {{todo-group-edit group=group action="createTodoItem"}}
 {{/each}}
 <h2>
@@ -12,6 +12,6 @@
     id="new-todo-group"
     placeholder="Create a new group"
     value=newGroupTitle
-    action="createTodoGroup"
+    enter="createTodoGroup"
   }}
 </h2>

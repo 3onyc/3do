@@ -3,7 +3,7 @@
     {{group.title}}
   </h3>
   <ul class='todo-group-items'>
-    {{#each item in group.items}}
+    {{#each group.items as |item|}}
       {{todo-item item=item}}
     {{/each}}
   </ul>

@@ -14,7 +14,7 @@
         {{item.title}}
       {{/if}}
     {{else}}
-      {{view "input-autofocus"
+      {{input-autofocus
         value=item.title
         autofocus="autofocus"
         enter="saveTitle"
@@ -34,7 +34,7 @@
       </p>
     {{else}}
       <p class='todo-item-description edit-description'>
-        {{view "textarea-autofocus"
+        {{textarea-autofocus
           value=item.description
           autofocus="autofocus"
           focus-out="saveDescription"

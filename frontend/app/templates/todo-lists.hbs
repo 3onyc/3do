@@ -1,6 +1,6 @@
 <h1 class='page-title'>Todo Lists</h1>
 <ul class='todo-lists'>
-  {{#each list in model}}
+  {{#each model as |list|}}
     <li class='todo-list'>
       {{#link-to 'todo-list' list}}
         {{list.title}}
@@ -11,7 +11,7 @@
     {{#unless creatingList}}
       <button {{action 'createList'}}>+</button>
     {{else}}
-      {{view "input-autofocus"
+      {{input-autofocus
         type="text"
         id="new-todo-list"
         placeholder="Create a new list"

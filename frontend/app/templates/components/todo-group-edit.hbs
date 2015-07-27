@@ -4,7 +4,7 @@
     {{#unless editingTitle }}
       <span {{action "editTitle"}}>{{group.title}}</span>
     {{else}}
-      {{view "input-autofocus"
+      {{input-autofocus
         value=group.title
         autofocus="autofocus"
         enter="saveTitle"
@@ -13,7 +13,7 @@
     {{/unless}}
   </h3>
   <ul class='todo-items'>
-    {{#each item in group.items}}
+    {{#each group.items as |item|}}
       {{todo-item-edit item=item}}
     {{/each}}
     <li>
@@ -21,7 +21,7 @@
         type="text"
         placeholder="Create a new todo"
         value=newItemTitle
-        action="newItem"
+        enter="newItem"
       }}
     </li>
   </ul>

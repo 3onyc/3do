@@ -3,6 +3,6 @@
   Edit
 {{/link-to}}
 
-{{#each group in model.groups}}
+{{#each model.groups as |group|}}
   {{todo-group group=group action="createTodoItem"}}
 {{/each}}
