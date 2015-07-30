@@ -3,7 +3,7 @@ PACKAGE=github.com/3onyc/3do
 
 dist:
 	cd frontend && ember build -prod
-	go build -o $(BINARY) $(PACKAGE)
+	gopm build -o $(BINARY)
 	rice append --exec=$(BINARY)
 
 deps: frontend-deps backend-deps
@@ -13,10 +13,10 @@ frontend-deps:
 	cd frontend && bower install
 
 backend-deps:
-	go install -v $(PACKAGE)/...
+	gopm get
 
 debug:
-	go build -o $(BINARY) $(PACKAGE)
+	gopm build -o $(BINARY)
 
 clean:
 	rm $(BINARY)
