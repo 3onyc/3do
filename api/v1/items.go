@@ -23,6 +23,8 @@ func (i *ItemsAPI) Register() {
 	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.get).Methods("GET")
 	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.put).Methods("PUT")
 	i.Router.HandleFunc("/api/v1/todoItems/{id}", i.delete).Methods("DELETE")
+	i.Router.HandleFunc("/api/v1/todoItems/{id}/done", i.done).Methods("PUT")
+	i.Router.HandleFunc("/api/v1/todoItems/{id}/todo", i.todo).Methods("PUT")
 	i.Router.HandleFunc("/api/v1/todoItems", i.post).Methods("POST")
 }
 
@@ -140,5 +142,39 @@ func (i *ItemsAPI) delete(w http.ResponseWriter, r *http.Request) {
 	} else if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
+	}
+}
+
+func (i *ItemsAPI) done(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if item, err := i.Items.Find(id); err != nil {
+		http.Error(w, err.Error(), 500)
+	} else if item == nil {
+		http.Error(w, "Item not found", 404)
+	} else {
+		util.WriteJSONResponse(w, true)
+		i.Bus.Publish("item:done", item)
+	}
+}
+
+func (i *ItemsAPI) todo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if item, err := i.Items.Find(id); err != nil {
+		http.Error(w, err.Error(), 500)
+	} else if item == nil {
+		http.Error(w, "Item not found", 404)
+	} else {
+		i.Bus.Publish("item:todo", item)
+		util.WriteJSONResponse(w, true)
 	}
 }

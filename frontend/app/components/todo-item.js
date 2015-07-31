@@ -12,12 +12,22 @@ export default Ember.Component.extend({
             item.set('done', true);
             item.set('doneAt', new Date());
             item.save();
+
+            Ember.$.ajax({
+                type: "PUT",
+                url: "/api/v1/todoItems/" + item.get('id') + "/done",
+            });
         },
         todo() {
             var item = this.get('item');
             item.set('done', false);
             item.set('doneAt', null);
             item.save();
+
+            Ember.$.ajax({
+                type: "PUT",
+                url: "/api/v1/todoItems/" + item.get('id') + "/todo",
+            });
         },
     }
 });
