@@ -2,6 +2,7 @@
 path = github.com/3onyc/3do
 
 [deps]
+github.com/asaskevich/EventBus = commit:30e855401d
 github.com/GeertJohan/go.rice = commit:ada95a01c9
 github.com/gorilla/mux = commit:f15e0c4946
 github.com/jmoiron/sqlx = commit:56b62f29e9
