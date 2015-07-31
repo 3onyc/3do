@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/3onyc/3do/api/v1"
 	"github.com/3onyc/3do/appinit"
+	"github.com/3onyc/3do/module"
 	"github.com/3onyc/3do/util"
 	"github.com/GeertJohan/go.rice"
 	"github.com/gorilla/mux"
@@ -67,6 +68,12 @@ func initRoutes(ctx *util.Context) {
 	v1.NewItemsAPI(ctx).Register()
 }
 
+func initModules(ctx *util.Context) {
+	if err := module.NewHabitica(ctx).Init(); err != nil {
+		log.Println(err)
+	}
+}
+
 func startHTTPServer(router *mux.Router) {
 	if *DEBUG {
 		log.Printf("Frontend located at %s\n", *FRONTEND_URL)
@@ -87,6 +94,7 @@ func main() {
 
 	ctx := util.NewContext(router, db)
 	initRoutes(ctx)
+	initModules(ctx)
 	seedDB(ctx)
 
 	addStaticRoute(router)
