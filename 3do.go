@@ -18,6 +18,7 @@ import (
 )
 
 var (
+	CONFIG_FILE  = flag.String("config", "", "Path to config file")
 	WEB_PORT     = flag.Uint64("port", 8080, "Port for the webserver to listen on")
 	DEBUG        = flag.Bool("debug", false, "Debug mode")
 	DB_SEED      = flag.Bool("db-seed", false, "Seed the DB with initial values")
