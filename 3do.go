@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/3onyc/3do/api/v1"
 	"github.com/3onyc/3do/appinit"
+	"github.com/3onyc/3do/middleware"
 	"github.com/3onyc/3do/module"
 	"github.com/3onyc/3do/util"
 	"github.com/GeertJohan/go.rice"
+	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/namsral/flag"
@@ -81,7 +83,11 @@ func startHTTPServer(router *mux.Router) {
 	log.Printf("Listening on :%d\n", *WEB_PORT)
 
 	addr := fmt.Sprintf(":%d", *WEB_PORT)
-	if err := http.ListenAndServe(addr, router); err != nil {
+
+	n := negroni.New(middleware.NewLogger())
+	n.UseHandler(router)
+
+	if err := http.ListenAndServe(addr, n); err != nil {
 		log.Fatal(err)
 	}
 }
