@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 BINARY=3do
 PACKAGE=github.com/3onyc/3do
 BOWER_BIN=node_modules/bower/bin/bower
