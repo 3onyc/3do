@@ -1,5 +1,6 @@
 BINARY=3do
 PACKAGE=github.com/3onyc/3do
+BOWER_BIN=node_modules/bower/bin/bower
 
 dist: 3do frontend-dist deps
 	rice append --exec=$(BINARY)
@@ -12,9 +13,12 @@ frontend-dist:
 
 deps: frontend-deps backend-deps
 
-frontend-deps:
+frontend-deps: frontend/$(BOWER_BIN)
 	cd frontend && npm install
-	cd frontend && bower install
+	cd frontend && $(BOWER_BIN) install
+
+frontend/$(BOWER_BIN):
+	cd frontend && npm install bower
 
 backend-deps: $(GOPATH)/bin/bunch $(GOPATH)/bin/rice
 	bunch install
