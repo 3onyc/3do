@@ -1,0 +1,20 @@
+github.com/3onyc/3do !self
+
+# Dependencies
+github.com/3onyc/go-habitica v0.0.1
+github.com/asaskevich/EventBus 30e855401d
+github.com/codegangsta/negroni c7477ad8e3
+github.com/daaku/go.zipexe
+github.com/GeertJohan/go.rice ada95a01c9
+github.com/go-kit/kit/log b863f698fa
+github.com/gorilla/context
+github.com/gorilla/mux f15e0c4946
+github.com/jmoiron/sqlx 56b62f29e9
+github.com/kardianos/osext
+github.com/mattn/go-sqlite3 b4142c444a
+github.com/namsral/flag bd57b3fc9a
+gopkg.in/logfmt.v0
+gopkg.in/stack.v1
+
+# Test Dependencies
+github.com/google/gofuzz bbcb9da2d7
