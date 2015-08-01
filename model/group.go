@@ -10,6 +10,8 @@ type TodoGroup struct {
 	Title     string           `json:"title"`
 	CreatedAt *time.Time       `json:"createdAt" db:"created_at"`
 	UpdatedAt *time.Time       `json:"updatedAt" db:"updated_at"`
-	List      int64            `json:"list,string" db:"list_id"`
-	Items     []int64          `json:"items,string"`
+	ListID    int64            `json:"list,string" db:"list_id"`
+	List      *TodoList        `json:"list,string"`
+	ItemIDs   []int64          `json:"items,string"`
+	Items     []*TodoItem      `json:"-"`
 }

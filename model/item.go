@@ -13,5 +13,6 @@ type TodoItem struct {
 	DoneAt      *time.Time       `json:"doneAt" db:"done_at"`
 	CreatedAt   *time.Time       `json:"createdAt" db:"created_at"`
 	UpdatedAt   *time.Time       `json:"updatedAt" db:"updated_at"`
-	Group       int64            `json:"group,string" db:"group_id"`
+	GroupID     int64            `json:"group,string" db:"group_id"`
+	Group       *TodoGroup       `json:"-"`
 }

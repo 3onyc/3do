@@ -37,13 +37,13 @@ func SeedDB(ctx *util.Context) error {
 		return err
 	}
 
-	g1.List = l1.ID.Int64
+	g1.ListID = l1.ID.Int64
 	if err := ctx.Groups.Insert(g1); err != nil {
 		return err
 	}
 
-	i1.Group = g1.ID.Int64
-	i2.Group = g1.ID.Int64
+	i1.GroupID = g1.ID.Int64
+	i2.GroupID = g1.ID.Int64
 	if err := ctx.Items.Insert(i1); err != nil {
 		return err
 	}

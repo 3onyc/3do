@@ -11,5 +11,6 @@ type TodoList struct {
 	Description string           `json:"description"`
 	CreatedAt   *time.Time       `json:"createdAt" db:"created_at"`
 	UpdatedAt   *time.Time       `json:"updatedAt" db:"updated_at"`
-	Groups      []int64          `json:"groups,string"`
+	GroupIDs    []int64          `json:"groups,string"`
+	Groups      []*TodoGroup     `json:"-"`
 }
