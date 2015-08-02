@@ -2,6 +2,6 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
     model() {
-        return this.store.find('todo-list');
+        return this.store.findAll('todo-list');
     }
 });
