@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func WriteJSONResponse(w http.ResponseWriter, v interface{}) {
@@ -12,4 +13,8 @@ func WriteJSONResponse(w http.ResponseWriter, v interface{}) {
 	} else {
 		w.Write(enc)
 	}
+}
+
+func ShowNewLines(i string) string {
+	return strings.Replace(i, "\n", "\\n\n", -1)
 }
