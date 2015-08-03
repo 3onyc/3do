@@ -32,6 +32,15 @@ export default Ember.Controller.extend({
 
             group.save();
             list.save();
-        }
+        },
+        editTitle() {
+            this.set('editingTitle', true);
+        },
+        saveTitle() {
+            this.get('model').save().then((list) => {
+                this.set('editingTitle', false);
+                this.transitionToRoute('todo-list-edit', list.get('id'), list.get('title'))
+            });
+        },
     }
 });

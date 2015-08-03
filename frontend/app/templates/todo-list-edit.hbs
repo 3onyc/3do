@@ -1,4 +1,14 @@
-<h1 class='page-title'>{{model.title}}</h1>
+{{#unless editingTitle}}
+  <h1 class='page-title' {{action "editTitle"}}>{{model.title}}</h1>
+{{else}}
+  {{input-autofocus
+    value=model.title
+    autofocus="autofocus"
+    enter="saveTitle"
+    focus-out="saveTitle"
+  }}
+{{/unless}}
+
 {{#link-to 'todo-list' model}}
   Back
 {{/link-to}}
