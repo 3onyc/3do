@@ -1,7 +1,7 @@
 <div class='todo-group'>
   <h3 class='todo-group-title'>
     <button {{action 'delete'}}>X</button>
-    {{#unless editingTitle }}
+    {{#unless editingTitle}}
       <span {{action "editTitle"}}>{{group.title}}</span>
     {{else}}
       {{input-autofocus
