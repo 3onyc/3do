@@ -64,7 +64,7 @@ func (repo *TodoGroupRepository) Delete(id int64) error {
 }
 
 func (repo *TodoGroupRepository) SetItemIDs(g *TodoGroup) error {
-	return repo.DB.Select(&g.Items, TODO_ITEM_SELECT_IDS_WITH_GROUP_QUERY, g.ID)
+	return repo.DB.Select(&g.ItemIDs, TODO_ITEM_SELECT_IDS_WITH_GROUP_QUERY, g.ID)
 }
 
 func (repo *TodoGroupRepository) GetAll() ([]*TodoGroup, error) {

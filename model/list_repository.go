@@ -64,7 +64,7 @@ func (repo *TodoListRepository) Delete(id int64) error {
 }
 
 func (repo *TodoListRepository) SetGroupIDs(l *TodoList) error {
-	return repo.DB.Select(&l.Groups, TODO_GROUP_SELECT_IDS_WITH_LIST_QUERY, l.ID)
+	return repo.DB.Select(&l.GroupIDs, TODO_GROUP_SELECT_IDS_WITH_LIST_QUERY, l.ID)
 }
 
 func (repo *TodoListRepository) GetAll() ([]*TodoList, error) {
