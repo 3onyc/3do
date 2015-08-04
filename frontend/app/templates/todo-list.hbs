@@ -1,7 +1,6 @@
 <h1 class='page-title'>{{model.title}}</h1>
-{{#link-to 'todo-list-edit' model}}
-  Edit
-{{/link-to}}
+{{#link-to 'todo-list-edit' model}}Edit{{/link-to}}
+<a href="/api/v1/todoLists/{{model.id}}/export">Export</a>
 
 {{#each model.groups as |group|}}
   {{todo-group group=group action="createTodoItem"}}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/3onyc/3do/model"
+	"github.com/3onyc/3do/parser"
 	"github.com/3onyc/3do/util"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -20,6 +21,7 @@ func NewListsAPI(ctx *util.Context) *ListsAPI {
 
 func (l *ListsAPI) Register() {
 	l.Router.HandleFunc("/api/v1/todoLists", l.list).Methods("GET")
+	l.Router.HandleFunc("/api/v1/todoLists/{id}/export", l.export).Methods("GET")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.get).Methods("GET")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.put).Methods("PUT")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.delete).Methods("DELETE")
@@ -119,6 +121,40 @@ func (l *ListsAPI) post(w http.ResponseWriter, r *http.Request) {
 	util.WriteJSONResponse(w, &ListGetResponse{
 		TodoList: list,
 	})
+}
+
+func (l *ListsAPI) export(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	if list, err := l.Lists.Find(id); err != nil {
+		http.Error(w, err.Error(), 500)
+	} else if list == nil {
+		http.Error(w, "List not found", 404)
+	} else {
+		// TODO: refactor into the repositories
+		if err := l.Groups.AddGroupsToList(list); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		for _, g := range list.Groups {
+			if err := l.Items.AddItemsToGroup(g); err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+		}
+
+		w.Header().Set("Content-Type", "text/markdown")
+		w.Header().Set("Content-Disposition", fmt.Sprintf(
+			"attachment; filename=%s.md",
+			list.Title,
+		))
+
+		parser.Write(list, w)
+	}
 }
 
 func (l *ListsAPI) delete(w http.ResponseWriter, r *http.Request) {
