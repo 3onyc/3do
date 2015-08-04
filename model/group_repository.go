@@ -67,6 +67,16 @@ func (repo *TodoGroupRepository) SetItemIDs(g *TodoGroup) error {
 	return repo.DB.Select(&g.ItemIDs, TODO_ITEM_SELECT_IDS_WITH_GROUP_QUERY, g.ID)
 }
 
+func (repo *TodoGroupRepository) AddGroupsToList(l *TodoList) error {
+	gs, err := repo.GetAllForList(l.ID.Int64)
+	if err != nil {
+		return err
+	}
+
+	l.Groups = gs
+	return nil
+}
+
 func (repo *TodoGroupRepository) GetAll() ([]*TodoGroup, error) {
 	var groups = []*TodoGroup{}
 	if err := repo.DB.Select(&groups, TODO_GROUP_SELECT_QUERY); err != nil {
