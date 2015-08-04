@@ -39,7 +39,7 @@ test: backend-deps
 	
 	shopt -s nullglob; \
 	for F in $$(find . -type d -not -path '*/\.*' -a -not -path "*frontend*"); do \
-		if [ -n "$$(echo $$F/*.go)" ]; then \
+		if [ -n "$$(echo $$F/*_test.go)" ]; then \
 			bunch go test "$(PACKAGE)/$${F:2}"; \
 		fi; \
 	done
