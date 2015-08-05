@@ -7,20 +7,6 @@ import (
 	"testing"
 )
 
-var writerOutput1 = `### Group 1
-
-* Item 1
-
-   Foo
-   Bar
-   # Baz
-
-* ~~Item 2~~
-
-### Group 2
-
-* Item 1`
-
 var writerInput1 = &model.TodoList{
 	Title:       "Foo",
 	Description: "List Description",
@@ -51,9 +37,23 @@ var writerInput1 = &model.TodoList{
 	},
 }
 
+var writerOutput1 = `### Group 1
+
+* Item 1
+
+   Foo
+   Bar
+   # Baz
+
+* ~~Item 2~~
+
+### Group 2
+
+* Item 1`
+
 func TestWriter(t *testing.T) {
 	buf := bytes.NewBufferString("")
-	Write(writerInput1, buf)
+	NewWriter().Write(writerInput1, buf)
 
 	if buf.String() != writerOutput1 {
 		t.Error("=== Expected ===")

@@ -153,7 +153,7 @@ func (l *ListsAPI) export(w http.ResponseWriter, r *http.Request) {
 			list.Title,
 		))
 
-		parser.Write(list, w)
+		parser.NewWriter().Write(list, w)
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"unicode"
 )
 
 func WriteJSONResponse(w http.ResponseWriter, v interface{}) {
@@ -17,4 +18,8 @@ func WriteJSONResponse(w http.ResponseWriter, v interface{}) {
 
 func ShowNewLines(i string) string {
 	return strings.Replace(i, "\n", "\\n\n", -1)
+}
+
+func TrimRightSpace(i string) string {
+	return strings.TrimRightFunc(i, unicode.IsSpace)
 }
