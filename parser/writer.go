@@ -40,3 +40,7 @@ func (w *Writer) Write(l *model.TodoList, wr io.Writer) error {
 
 	return nil
 }
+
+func Write(l *model.TodoList, wr io.Writer) error {
+	return NewWriter().Write(l, wr)
+}

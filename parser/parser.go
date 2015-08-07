@@ -159,3 +159,7 @@ func (p *Parser) Parse(t string, r io.Reader) (*model.TodoList, error) {
 
 	return list, nil
 }
+
+func Parse(t string, r io.Reader) (*model.TodoList, error) {
+	return NewParser().Parse(t, r)
+}
