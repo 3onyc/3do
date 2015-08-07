@@ -1,3 +1,4 @@
 - Automated tests
 - Import from web ui
 - Group/List descriptions in Markdown parser
+- Fix direct URLs not working in production mode
