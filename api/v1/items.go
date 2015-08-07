@@ -50,6 +50,7 @@ func (i *ItemsAPI) get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	if item, err := i.Items.Find(id); err != nil {

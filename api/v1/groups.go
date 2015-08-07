@@ -48,6 +48,7 @@ func (g *GroupsAPI) get(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	if group, err := g.Groups.Find(id); err != nil {
