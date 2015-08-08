@@ -20,11 +20,16 @@ func (w *Writer) Write(l *model.TodoList, wr io.Writer) error {
 		}
 		fmt.Fprintf(wr, "### %s", g.Title)
 
+		var prevItem *model.TodoItem
 		for _, i := range g.Items {
+			if prevItem == nil || prevItem.Description != "" {
+				fmt.Fprint(wr, "\n")
+			}
+
 			if !i.Done {
-				fmt.Fprintf(wr, "\n\n* %s", i.Title)
+				fmt.Fprintf(wr, "\n* %s", i.Title)
 			} else {
-				fmt.Fprintf(wr, "\n\n* ~~%s~~", i.Title)
+				fmt.Fprintf(wr, "\n* ~~%s~~", i.Title)
 			}
 
 			if i.Description != "" {
@@ -35,6 +40,8 @@ func (w *Writer) Write(l *model.TodoList, wr io.Writer) error {
 					fmt.Fprintf(wr, "\n   %s", l)
 				}
 			}
+
+			prevItem = i
 		}
 	}
 

@@ -32,6 +32,10 @@ var writerInput1 = &model.TodoList{
 					Title: "Item 1",
 					Done:  false,
 				},
+				{
+					Title: "Item 2",
+					Done:  false,
+				},
 			},
 		},
 	},
@@ -49,7 +53,8 @@ var writerOutput1 = `### Group 1
 
 ### Group 2
 
-* Item 1`
+* Item 1
+* Item 2`
 
 func TestWriter(t *testing.T) {
 	buf := bytes.NewBufferString("")
