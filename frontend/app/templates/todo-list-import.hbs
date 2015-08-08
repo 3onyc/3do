@@ -1,0 +1,67 @@
+<h1 class='page-title'>Import Todo List</h1>
+
+<form id="import-form">
+  <p>
+    <label for="title">Title:</label>
+    {{#if customTitle}}
+      {{input
+        type="text"
+        name="title"
+        id="title"
+        placeholder="Todo List Title"
+        value=title
+      }}
+    {{else}}
+      <span>{{title}}</span>
+    {{/if}}
+  </p>
+    {{#unless importText}}
+      <p>
+        <label for="custom_title">Use Custom Title</label>
+        <input 
+          name="custom_title" 
+          type="checkbox" 
+          id="custom_title" 
+          checked={{customTitle}}
+          onclick={{action "checkCustom" value="target.checked"}}
+        />
+      </p>
+    {{/unless}}
+  <p>
+    <label for="import_text">Import From Text</label>
+    <input 
+      name="import_text" 
+      type="checkbox" 
+      id="import_text" 
+      value="true"
+      checked={{importText}}
+      onclick={{action "checkImportText" value="target.checked"}}
+    />
+  </p>
+  <p>
+    {{#unless importText}}
+      <label for="file">File To Import</label>
+      <input 
+        type="file" 
+        name="file" 
+        id="file" 
+        {{action 'fileSelected' on='change'}}
+      />
+    {{else}}
+      <label for="text">Text To Import</label>
+      <div>
+        {{textarea-autofocus
+          name="text"
+          id="text"
+          rows="20"
+          cols="60"
+        }}
+      </div>
+    {{/unless}}
+  </p>
+  <p>
+    <button {{action 'importList'}}>
+      Import
+    </button>
+  </p>
+</form>

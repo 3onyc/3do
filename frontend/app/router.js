@@ -9,6 +9,7 @@ Router.map(function() {
   this.resource('todo-lists', { path: '/todo' });
   this.resource('todo-list', { path: '/todo/:id/:title' });
   this.resource('todo-list-edit', { path: '/todo/edit/:id/:title' });
+  this.resource('todo-list-import', { path: '/todo/import' });
 });
 
 export default Router;
