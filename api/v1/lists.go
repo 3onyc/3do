@@ -7,8 +7,10 @@ import (
 	"github.com/3onyc/3do/parser"
 	"github.com/3onyc/3do/util"
 	"github.com/gorilla/mux"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type ListsAPI struct {
@@ -21,6 +23,7 @@ func NewListsAPI(ctx *util.Context) *ListsAPI {
 
 func (l *ListsAPI) Register() {
 	l.Router.HandleFunc("/api/v1/todoLists", l.list).Methods("GET")
+	l.Router.HandleFunc("/api/v1/todoLists/import", l.importList).Methods("POST")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}/export", l.export).Methods("GET")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.get).Methods("GET")
 	l.Router.HandleFunc("/api/v1/todoLists/{id}", l.put).Methods("PUT")
@@ -44,6 +47,54 @@ func (l *ListsAPI) list(w http.ResponseWriter, r *http.Request) {
 			TodoLists: lists,
 		})
 	}
+}
+
+func (l *ListsAPI) importList(w http.ResponseWriter, r *http.Request) {
+	title := r.FormValue("title")
+	importText := r.FormValue("import_text") == "true"
+
+	var file io.Reader
+	if importText {
+		file = strings.NewReader(r.FormValue("text"))
+	} else {
+		var err error
+		file, _, err = r.FormFile("file")
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	}
+
+	list, err := parser.Parse(title, file)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if err := l.Lists.Insert(list); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	for _, g := range list.Groups {
+		g.ListID = list.ID.Int64
+		if err := l.Groups.Insert(g); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		for _, i := range g.Items {
+			i.GroupID = g.ID.Int64
+			if err := l.Items.Insert(i); err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+		}
+	}
+
+	util.WriteJSONResponse(w, &ListGetResponse{
+		TodoList: list,
+	})
 }
 
 func (l *ListsAPI) get(w http.ResponseWriter, r *http.Request) {
