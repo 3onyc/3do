@@ -11,24 +11,24 @@ var writerInput1 = &model.TodoList{
 	Title:       "Foo",
 	Description: "List Description",
 	Groups: []*model.TodoGroup{
-		&model.TodoGroup{
+		{
 			Title: "Group 1",
 			Items: []*model.TodoItem{
-				&model.TodoItem{
+				{
 					Title:       "Item 1",
 					Done:        false,
 					Description: "Foo\nBar\n# Baz",
 				},
-				&model.TodoItem{
+				{
 					Title: "Item 2",
 					Done:  true,
 				},
 			},
 		},
-		&model.TodoGroup{
+		{
 			Title: "Group 2",
 			Items: []*model.TodoItem{
-				&model.TodoItem{
+				{
 					Title: "Item 1",
 					Done:  false,
 				},
