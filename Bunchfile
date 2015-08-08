@@ -6,7 +6,7 @@ github.com/asaskevich/EventBus 30e855401d
 github.com/codegangsta/negroni c7477ad8e3
 github.com/daaku/go.zipexe
 github.com/GeertJohan/go.rice ada95a01c9
-github.com/go-kit/kit/log b863f698fa
+github.com/go-kit/kit/log 7cae3fd8de
 github.com/gorilla/context
 github.com/gorilla/mux f15e0c4946
 github.com/jmoiron/sqlx 56b62f29e9
