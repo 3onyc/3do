@@ -183,7 +183,11 @@ func (l *ListsAPI) export(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if list, err := l.Lists.Find(id); err != nil {
-		http.Error(w, err.Error(), 500)
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "File Not Found", 404)
+		} else {
+			http.Error(w, err.Error(), 500)
+		}
 	} else if list == nil {
 		http.Error(w, "List not found", 404)
 	} else {
