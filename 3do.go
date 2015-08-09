@@ -59,7 +59,10 @@ func addStaticRoute(router *mux.Router) {
 		router.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
 	} else {
 		router.PathPrefix("/").Handler(
-			http.FileServer(rice.MustFindBox("frontend/dist").HTTPBox()),
+			util.CatchAllFileServer(
+				rice.MustFindBox("frontend/dist").HTTPBox(),
+				"/index.html",
+			),
 		)
 	}
 }
