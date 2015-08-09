@@ -11,8 +11,10 @@ export default Ember.Controller.extend({
                 data: formData,
                 processData: false,
                 contentType: false,
+                dataType: "json",
             }).done((data) => {
-                console.log(data);
+                var list = data.todoList;
+                this.transitionToRoute('todo-list', list.id, list.title);
             });
         },
         fileSelected() {
