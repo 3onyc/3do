@@ -87,7 +87,7 @@ func (g *GroupsAPI) put(w http.ResponseWriter, r *http.Request) {
 	}
 
 	group.Title = payload.TodoGroup.Title
-	group.List = payload.TodoGroup.List
+	group.ListID = payload.TodoGroup.ListID
 
 	if err := g.Groups.Update(group); err != nil {
 		http.Error(w, err.Error(), 500)
@@ -108,8 +108,8 @@ func (g *GroupsAPI) post(w http.ResponseWriter, r *http.Request) {
 
 	postGroup := payload.TodoGroup
 	group := &model.TodoGroup{
-		Title: postGroup.Title,
-		List:  postGroup.List,
+		Title:  postGroup.Title,
+		ListID: postGroup.ListID,
 	}
 
 	if err := g.Groups.Insert(group); err != nil {

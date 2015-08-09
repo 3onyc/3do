@@ -117,7 +117,7 @@ func (i *ItemsAPI) post(w http.ResponseWriter, r *http.Request) {
 		Description: postItem.Description,
 		Done:        postItem.Done,
 		DoneAt:      postItem.DoneAt,
-		Group:       postItem.Group,
+		GroupID:     postItem.GroupID,
 	}
 
 	if err := i.Items.Insert(item); err != nil {
