@@ -9,13 +9,14 @@ import (
 	"github.com/3onyc/3do/util"
 	"github.com/GeertJohan/go.rice"
 	"github.com/codegangsta/negroni"
+	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/namsral/flag"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,8 +34,13 @@ var (
 	)
 )
 
-func initDB() *sqlx.DB {
-	log.Printf("Initialising database at %s...\n", *DB_URI)
+func initDB(l log.Logger) *sqlx.DB {
+	l.Log(
+		"action", "init-db",
+		"driver", "sqlite3",
+		"dburi", *DB_URI,
+	)
+
 	db := sqlx.MustConnect("sqlite3", *DB_URI)
 	appinit.CreateDBSchema(db)
 
@@ -43,25 +49,33 @@ func initDB() *sqlx.DB {
 
 func seedDB(ctx *util.Context) {
 	if *DB_SEED {
-		log.Println("Seeding database...")
 		if err := appinit.SeedDB(ctx); err != nil {
-			log.Fatalln(err)
+			ctx.Log(
+				"action", "seed-db",
+				"result", "false",
+				"message", err,
+			)
 		}
 	}
 }
 
-func addStaticRoute(router *mux.Router) {
+func addStaticRoute(ctx *util.Context) {
 	if *DEBUG {
 		u, err := url.Parse(*FRONTEND_URL)
 		if err != nil {
-			log.Fatal("Couldn't parse frontend URL")
+			ctx.Log(
+				"action", "add-static-route",
+				"result", false,
+				"message", "Couldn't parse frontend URL",
+			)
 		}
-		router.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
+		ctx.Router.PathPrefix("/").Handler(httputil.NewSingleHostReverseProxy(u))
 	} else {
-		router.PathPrefix("/").Handler(
+		ctx.Router.PathPrefix("/").Handler(
 			util.CatchAllFileServer(
 				rice.MustFindBox("frontend/dist").HTTPBox(),
 				"/index.html",
+				ctx.Logger,
 			),
 		)
 	}
@@ -75,37 +89,53 @@ func initRoutes(ctx *util.Context) {
 
 func initModules(ctx *util.Context) {
 	if err := module.NewHabitica(ctx).Init(); err != nil {
-		log.Println(err)
+		ctx.Log(
+			"action", "init-modules",
+			"result", false,
+			"message", err,
+		)
 	}
 }
 
-func startHTTPServer(router *mux.Router) {
+func startHTTPServer(ctx *util.Context) {
 	if *DEBUG {
-		log.Printf("Frontend located at %s\n", *FRONTEND_URL)
+		ctx.Log(
+			"action", "debug",
+			"message", fmt.Sprintf("Frontend located at %s", *FRONTEND_URL),
+		)
 	}
-	log.Printf("Listening on :%d\n", *WEB_PORT)
 
 	addr := fmt.Sprintf(":%d", *WEB_PORT)
+	ctx.Log(
+		"action", "listen",
+		"address", addr,
+	)
 
-	n := negroni.New(middleware.NewLogger())
-	n.UseHandler(router)
+	n := negroni.New(middleware.NewLogger(ctx.Logger))
+	n.UseHandler(ctx.Router)
 
 	if err := http.ListenAndServe(addr, n); err != nil {
-		log.Fatal(err)
+		ctx.Log(
+			"action", "listen",
+			"result", false,
+			"message", err,
+		)
 	}
 }
 
 func main() {
 	flag.Parse()
 
-	router := mux.NewRouter()
-	db := initDB()
+	log := log.NewJSONLogger(os.Stderr)
 
-	ctx := util.NewContext(router, db)
+	router := mux.NewRouter()
+	db := initDB(log)
+
+	ctx := util.NewContext(router, db, log)
 	initRoutes(ctx)
 	initModules(ctx)
 	seedDB(ctx)
 
-	addStaticRoute(router)
-	startHTTPServer(router)
+	addStaticRoute(ctx)
+	startHTTPServer(ctx)
 }

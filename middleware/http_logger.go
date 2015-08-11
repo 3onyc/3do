@@ -12,8 +12,12 @@ type Logger struct {
 	log.Logger
 }
 
-func NewLogger() *Logger {
-	return &Logger{log.NewJSONLogger(os.Stderr)}
+func NewLogger(l log.Logger) *Logger {
+	if l == nil {
+		l = log.NewJSONLogger(os.Stderr)
+	}
+
+	return &Logger{l}
 }
 
 func (l *Logger) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

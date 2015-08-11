@@ -6,7 +6,6 @@ import (
 	"github.com/3onyc/3do/util"
 	"github.com/3onyc/go-habitica"
 	"github.com/namsral/flag"
-	"log"
 )
 
 var (
@@ -43,12 +42,24 @@ func (m *Habitica) Init() error {
 
 func (m *Habitica) handleDone(item *model.TodoItem) {
 	if err := m.client.TaskUp(*HABIT_TASK); err != nil {
-		log.Println(err)
+		m.Log(
+			"module", "habitica",
+			"action", "task-up",
+			"task-id", *HABIT_TASK,
+			"result", false,
+			"message", err,
+		)
 	}
 }
 
 func (m *Habitica) handleTodo(item *model.TodoItem) {
 	if err := m.client.TaskDown(*HABIT_TASK); err != nil {
-		log.Println(err)
+		m.Log(
+			"module", "habitica",
+			"action", "task-down",
+			"task-id", *HABIT_TASK,
+			"result", false,
+			"message", err,
+		)
 	}
 }

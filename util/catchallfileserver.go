@@ -1,7 +1,7 @@
 package util
 
 import (
-	"log"
+	"github.com/go-kit/kit/log"
 	"net/http"
 	"path"
 	"strings"
@@ -11,25 +11,39 @@ type catchAllFileHandler struct {
 	FS           http.FileSystem
 	InnerHandler http.Handler
 	serveInstead string
+	Logger       log.Logger
 }
 
-func CatchAllFileServer(root http.FileSystem, serveInstead string) http.Handler {
+func CatchAllFileServer(
+	root http.FileSystem,
+	serveInstead string,
+	logger log.Logger,
+) http.Handler {
 	return &catchAllFileHandler{
 		FS:           root,
 		InnerHandler: http.FileServer(root),
 		serveInstead: serveInstead,
+		Logger:       logger,
 	}
 }
 
 func (f *catchAllFileHandler) ServeFallback(w http.ResponseWriter, r *http.Request) {
 	file, err := f.FS.Open(f.serveInstead)
 	if err != nil {
-		log.Printf("ServeFallback Error: %s\n", err)
+		f.Logger.Log(
+			"action", "serve-fallback",
+			"result", false,
+			"message", err,
+		)
 	}
 
 	d, err := file.Stat()
 	if err != nil {
-		log.Printf("ServeFallback Error: %s\n", err)
+		f.Logger.Log(
+			"action", "serve-fallback",
+			"result", false,
+			"message", err,
+		)
 	}
 
 	http.ServeContent(w, r, f.serveInstead, d.ModTime(), file)
