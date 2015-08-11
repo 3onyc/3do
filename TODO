@@ -1,2 +1,4 @@
 - Automated tests
+- Use transactions
+- Use go generate to generate *_repository.go and *_queries.go
 - Group/List descriptions in Markdown parser
