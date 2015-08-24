@@ -11,8 +11,8 @@ func TestShowNewLines(t *testing.T) {
 	}
 
 	for input, expected := range cases {
-		if ShowNewLines(input) != expected {
-			t.Errorf("'%s' doesn't match expected '%s'")
+		if result := ShowNewLines(input); result != expected {
+			t.Errorf("'%s' doesn't match expected '%s'", result, expected)
 		}
 	}
 }
@@ -24,8 +24,8 @@ func TestTrimRightSpace(t *testing.T) {
 	}
 
 	for input, expected := range cases {
-		if TrimRightSpace(input) != expected {
-			t.Errorf("'%s' doesn't match expected '%s'")
+		if result := TrimRightSpace(input); result != expected {
+			t.Errorf("'%s' doesn't match expected '%s'", result, expected)
 		}
 	}
 }
