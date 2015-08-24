@@ -36,7 +36,9 @@ type ListListResponse struct {
 }
 
 type ListGetResponse struct {
-	TodoList *model.TodoList `json:"todoList"`
+	TodoList   *model.TodoList    `json:"todoList"`
+	TodoGroups []*model.TodoGroup `json:"todoGroups,omitempty"`
+	TodoItems  []*model.TodoItem  `json:"todoItems,omitempty"`
 }
 
 func (l *ListsAPI) list(w http.ResponseWriter, r *http.Request) {
@@ -104,15 +106,37 @@ func (l *ListsAPI) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if list, err := l.Lists.Find(id); err != nil {
+	list, err := l.Lists.Find(id)
+	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	} else if list == nil {
 		http.Error(w, "List not found", 404)
-	} else {
-		util.WriteJSONResponse(w, &ListGetResponse{
-			TodoList: list,
-		})
+		return
 	}
+
+	groups, err := l.Groups.GetAllForList(id)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	items := []*model.TodoItem{}
+	for _, g := range groups {
+		is, err := l.Items.GetAllForGroup(g.ID.Int64)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		items = append(items, is...)
+	}
+
+	util.WriteJSONResponse(w, &ListGetResponse{
+		TodoList:   list,
+		TodoGroups: groups,
+		TodoItems:  items,
+	})
 }
 
 func (l *ListsAPI) put(w http.ResponseWriter, r *http.Request) {

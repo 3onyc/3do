@@ -23,7 +23,8 @@ type GroupListResponse struct {
 }
 
 type GroupGetResponse struct {
-	TodoGroup *model.TodoGroup `json:"todoGroup"`
+	TodoGroup *model.TodoGroup  `json:"todoGroup"`
+	TodoItems []*model.TodoItem `json:"todoItem,omitempty"`
 }
 
 func (g *GroupsAPI) Register() {
@@ -51,15 +52,25 @@ func (g *GroupsAPI) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if group, err := g.Groups.Find(id); err != nil {
+	group, err := g.Groups.Find(id)
+	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	} else if group == nil {
 		http.Error(w, "Group not found", 404)
-	} else {
-		util.WriteJSONResponse(w, &GroupGetResponse{
-			TodoGroup: group,
-		})
+		return
 	}
+
+	items, err := g.Items.GetAllForGroup(id)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	util.WriteJSONResponse(w, &GroupGetResponse{
+		TodoGroup: group,
+		TodoItems: items,
+	})
 }
 
 func (g *GroupsAPI) put(w http.ResponseWriter, r *http.Request) {
